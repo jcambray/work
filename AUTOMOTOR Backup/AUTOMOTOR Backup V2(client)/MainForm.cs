@@ -31,6 +31,8 @@ namespace clientbackup
             this.lbUtilisateur1.Text = Environment.UserName;
             this.minimize();
             this.sauvegarde = new Save();
+
+ 
             if (this.sauvegarde.verifieSiTerminee())
             {
                 this.sauvegarde.setEstTerminee(true);
@@ -42,6 +44,10 @@ namespace clientbackup
                 this.lbEtatSauvegarde.Text = " Incomplète.";
                 this.lbEtatSauvegarde.ForeColor = Color.Red;
             }
+
+            //chargement des paramètres de l'application
+            //Configuration du Timer
+            //Chargement de la date de la derniere sauvegarde
             this.c = new Configuration();
             this.configureTimer();
             this.nextSave = c.getNextSaveDate();
@@ -78,6 +84,7 @@ namespace clientbackup
             base.WndProc(ref m);
         }
 
+        #region Ouverture du formulaire de configuration après vérification du MDP administrateur
         private void configuraionToolStripMenuItem_Click(object sender, EventArgs e)
         {
             MDPAdminControl MDPAC = new MDPAdminControl();
@@ -95,7 +102,9 @@ namespace clientbackup
                 }
             }
         }
+        #endregion
 
+        #region fermeture de l'application après vérification du MDP administrateur
         private void quitterToolStripMenuItem_Click(object sender, EventArgs e)
         {
             MDPAdminControl MDPAC = new MDPAdminControl();
@@ -112,7 +121,13 @@ namespace clientbackup
                 }
             }
         }
+        #endregion
 
+        #region Lorsque l'utilisateur clique sur le bouton "faire une sauvegarde"
+        //Si l'utilisateur accepte le redémarrage de l'ordinateur
+        //activation de l'autologon
+        //sauvegarde de l'etat de l'autologon à true
+        //lancement du redémarrage de l'ordinateur
         private void btnSave_Click(object sender, EventArgs e)
         {
             if (MessageBox.Show("La sauvegarde necessite le redemarrage de l'ordinateur, voulez-vous redémarrer maintenant?", " ", MessageBoxButtons.YesNo) == DialogResult.Yes)
@@ -124,6 +139,7 @@ namespace clientbackup
             }
             
         }
+        #endregion
 
         public void configureTimer()
         {
@@ -131,6 +147,15 @@ namespace clientbackup
             this.myTimer.Enabled = true;
         }
 
+        #region A chaque "tick" du timer:
+        //Si les condition necessaire au lancement d'une sauvegarde sont reunies
+        //aret du timer
+        //demande de report de la sauvegarde
+        //Si oui : redemarrage du timer
+        //si non : 
+        //activation de l'autologon
+        //sauvegarde de l'etat de l'autologon à true
+        //lancement du redémarrage de l'ordinateur
         private void myTimer_Tick(object sender, EventArgs e)
         {
             if (this.checkSaveConditions())
@@ -152,6 +177,7 @@ namespace clientbackup
                 }
             }
         }
+        #endregion
 
         public bool checkSaveConditions()
         {
