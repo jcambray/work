@@ -167,7 +167,7 @@ namespace clientbackup
                 //this.nextSave = c.getNextSaveDate();
                 this.tempsRestant = this.nextSave - DateTime.Now;
                 TimeSpan tempsEcoule = DateTime.Now - lastSave;
-                if (this.lbDateDerniereSauvegarde.Text == "Aucune sauvegarde")
+                if (Serialization.deserializeLastSaveDate().Year == 2000)
                 {
                     this.lbDateProchaineSauvegarde1.ForeColor = Color.Red;
                     this.lbDateProchaineSauvegarde1.Text = "non planifiée";
@@ -226,7 +226,7 @@ namespace clientbackup
 
         public void actualiseLbCompteARebours(TimeSpan t)
         {
-            if (this.lbDateDerniereSauvegarde.Text == "Aucune sauvegarde")
+            if (Serialization.deserializeLastSaveDate().Year == 2000)
             {
 
                 this.lbCompteARebours.Text = "non planifiée";
