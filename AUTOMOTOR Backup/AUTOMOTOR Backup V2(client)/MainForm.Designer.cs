@@ -42,8 +42,6 @@
             this.lbUtilisateur1 = new System.Windows.Forms.Label();
             this.lbProchaineSauvegarde1 = new System.Windows.Forms.Label();
             this.lbCompteARebours = new System.Windows.Forms.Label();
-            this.lb = new System.Windows.Forms.Label();
-            this.lbDateDerniereSauvegarde = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.lbDateProchaineSauvegarde = new System.Windows.Forms.Label();
             this.lbDateProchaineSauvegarde1 = new System.Windows.Forms.Label();
@@ -143,7 +141,7 @@
             // 
             this.lbProchaineSauvegarde1.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.lbProchaineSauvegarde1.AutoSize = true;
-            this.lbProchaineSauvegarde1.Location = new System.Drawing.Point(9, 216);
+            this.lbProchaineSauvegarde1.Location = new System.Drawing.Point(9, 172);
             this.lbProchaineSauvegarde1.Name = "lbProchaineSauvegarde1";
             this.lbProchaineSauvegarde1.Size = new System.Drawing.Size(143, 13);
             this.lbProchaineSauvegarde1.TabIndex = 5;
@@ -153,29 +151,11 @@
             // 
             this.lbCompteARebours.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.lbCompteARebours.AutoSize = true;
-            this.lbCompteARebours.Location = new System.Drawing.Point(192, 216);
+            this.lbCompteARebours.Location = new System.Drawing.Point(192, 172);
             this.lbCompteARebours.Name = "lbCompteARebours";
             this.lbCompteARebours.Size = new System.Drawing.Size(35, 13);
             this.lbCompteARebours.TabIndex = 7;
             this.lbCompteARebours.Text = "label1";
-            // 
-            // lb
-            // 
-            this.lb.AutoSize = true;
-            this.lb.Location = new System.Drawing.Point(9, 172);
-            this.lb.Name = "lb";
-            this.lb.Size = new System.Drawing.Size(159, 13);
-            this.lb.TabIndex = 8;
-            this.lb.Text = "Date de la dernière sauvegarde:";
-            // 
-            // lbDateDerniereSauvegarde
-            // 
-            this.lbDateDerniereSauvegarde.AutoSize = true;
-            this.lbDateDerniereSauvegarde.Location = new System.Drawing.Point(192, 172);
-            this.lbDateDerniereSauvegarde.Name = "lbDateDerniereSauvegarde";
-            this.lbDateDerniereSauvegarde.Size = new System.Drawing.Size(35, 13);
-            this.lbDateDerniereSauvegarde.TabIndex = 9;
-            this.lbDateDerniereSauvegarde.Text = "label1";
             // 
             // pictureBox1
             // 
@@ -190,7 +170,7 @@
             // lbDateProchaineSauvegarde
             // 
             this.lbDateProchaineSauvegarde.AutoSize = true;
-            this.lbDateProchaineSauvegarde.Location = new System.Drawing.Point(9, 254);
+            this.lbDateProchaineSauvegarde.Location = new System.Drawing.Point(9, 209);
             this.lbDateProchaineSauvegarde.Name = "lbDateProchaineSauvegarde";
             this.lbDateProchaineSauvegarde.Size = new System.Drawing.Size(168, 13);
             this.lbDateProchaineSauvegarde.TabIndex = 11;
@@ -199,7 +179,7 @@
             // lbDateProchaineSauvegarde1
             // 
             this.lbDateProchaineSauvegarde1.AutoSize = true;
-            this.lbDateProchaineSauvegarde1.Location = new System.Drawing.Point(195, 254);
+            this.lbDateProchaineSauvegarde1.Location = new System.Drawing.Point(192, 209);
             this.lbDateProchaineSauvegarde1.Name = "lbDateProchaineSauvegarde1";
             this.lbDateProchaineSauvegarde1.Size = new System.Drawing.Size(35, 13);
             this.lbDateProchaineSauvegarde1.TabIndex = 12;
@@ -208,7 +188,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(9, 311);
+            this.label1.Location = new System.Drawing.Point(9, 253);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(155, 13);
             this.label1.TabIndex = 13;
@@ -217,7 +197,7 @@
             // lbEtatSauvegarde
             // 
             this.lbEtatSauvegarde.AutoSize = true;
-            this.lbEtatSauvegarde.Location = new System.Drawing.Point(192, 311);
+            this.lbEtatSauvegarde.Location = new System.Drawing.Point(192, 253);
             this.lbEtatSauvegarde.Name = "lbEtatSauvegarde";
             this.lbEtatSauvegarde.Size = new System.Drawing.Size(35, 13);
             this.lbEtatSauvegarde.TabIndex = 14;
@@ -235,8 +215,6 @@
             this.Controls.Add(this.lbDateProchaineSauvegarde1);
             this.Controls.Add(this.lbDateProchaineSauvegarde);
             this.Controls.Add(this.pictureBox1);
-            this.Controls.Add(this.lbDateDerniereSauvegarde);
-            this.Controls.Add(this.lb);
             this.Controls.Add(this.lbCompteARebours);
             this.Controls.Add(this.lbProchaineSauvegarde1);
             this.Controls.Add(this.lbUtilisateur1);
@@ -272,8 +250,6 @@
         private System.Windows.Forms.Label lbUtilisateur1;
         private System.Windows.Forms.Label lbProchaineSauvegarde1;
         private System.Windows.Forms.Label lbCompteARebours;
-        private System.Windows.Forms.Label lb;
-        private System.Windows.Forms.Label lbDateDerniereSauvegarde;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Label lbDateProchaineSauvegarde;
         private System.Windows.Forms.Label lbDateProchaineSauvegarde1;

@@ -28,15 +28,6 @@ namespace clientbackup
             InitializeComponent();
             //RegistryModifier.setStartOnWindowsStart();
             this.Text = "AUTOMOTOR Backup v" + Application.ProductVersion;
-            if (Serialization.deserializeLastSaveDate().Year == 2000)
-            {
-                this.lbDateDerniereSauvegarde.ForeColor = Color.Red;
-                this.lbDateDerniereSauvegarde.Text = "Aucune sauvegarde";
-            }
-            else
-            {
-                this.lbDateDerniereSauvegarde.Text = Serialization.deserializeLastSaveDate().ToShortDateString();
-            }
             this.lbUtilisateur1.Text = Environment.UserName;
             this.minimize();
             this.sauvegarde = new Save();
