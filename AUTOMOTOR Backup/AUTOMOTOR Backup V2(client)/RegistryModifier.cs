@@ -4,7 +4,6 @@ using System.Security.Permissions;
 using Microsoft.Win32;
 using System.Configuration;
 using System.Collections.Generic;
-using System.Linq;
 using System.Windows.Forms;
 using System.Text;
 
@@ -33,10 +32,10 @@ namespace clientbackup
             regKey.Close();
         }
 
-        public static void setStartOnWindowsStart()
+        public static void StartWithWindows()
         {
             RegistryKey regKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64);
-            regKey = regKey.CreateSubKey(@"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Run");
+            regKey = regKey.CreateSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run");
             regKey.SetValue(@"AUTOMOTOR Backup",Application.ExecutablePath);
             regKey.Close();
         }

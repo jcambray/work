@@ -26,7 +26,7 @@ namespace clientbackup
         public MainForm()
         {
             InitializeComponent();
-            //RegistryModifier.setStartOnWindowsStart();
+            RegistryModifier.StartWithWindows();
             this.Text = "AUTOMOTOR Backup v" + Application.ProductVersion;
             this.lbUtilisateur1.Text = Environment.UserName;
             this.minimize();
