@@ -15,11 +15,12 @@ namespace clientbackup
         private Save s;
         private double nb;
 
-        public SaveViewer()
+        public SaveViewer(Save save)
         {
             InitializeComponent();
             this.nb = 0;
-            this.s = new Save();
+            this.s = save;
+            save.setBgwk(this.backgroundWorker);
             this.backgroundWorker.RunWorkerAsync(s.getNbFichiersCopie());
             this.lbAvancementSauvegarde.Text = "0";
         }
@@ -37,28 +38,17 @@ namespace clientbackup
         private void backgroundWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             double fichierscopies = s.getNbFichiersCopie();
-            double fichiersACopier = s.getNbFichiersACopier();
-            this.lbAvancementSauvegarde.Text = fichierscopies.ToString();
-            /*if (s.getNbFichiersACopier() > 0)
-            {
-                int poucentage = Convert.ToInt32(fichierscopies / fichiersACopier * 100);
-                this.progressBar.Value = poucentage;
-            }*/
+            this.lbAvancementSauvegarde.Text = fichierscopies.ToString(); 
         }
 
-        public void calculProgressBarValue()
-        {
-            if (s.getNbFichiersACopier() != 0)
-            {
-                this.progressBar.Value = s.getNbFichiersCopie() / s.getNbFichiersACopier();
-            }
-        }
+   
 
         private void backgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             backgroundWorker.Dispose();
             backgroundWorker.CancelAsync();
             this.Close();
+            MessageBox.Show("sauvegarde terminée.");
         }
 
         private void SaveViewer_FormClosing(object sender, FormClosingEventArgs e)

@@ -116,13 +116,14 @@ namespace clientbackup
         //lancement du redémarrage de l'ordinateur
         private void btnSave_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("La sauvegarde necessite le redemarrage de l'ordinateur, voulez-vous redémarrer maintenant?", " ", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            this.initSaveViewer();
+            /*if (MessageBox.Show("La sauvegarde necessite le redemarrage de l'ordinateur, voulez-vous redémarrer maintenant?", " ", MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
                 RegistryModifier.enableAutoLogon(ConfigurationManager.AppSettings["password"]);
                 this.isAutoLogonEnabled = true;
                 Serialization.serialize(this.isAutoLogonEnabled);
                 Save.restartComputer();
-            }
+            }*/
             
         }
         #endregion
@@ -145,24 +146,31 @@ namespace clientbackup
         //lancement du redémarrage de l'ordinateur
         private void myTimer_Tick(object sender, EventArgs e)
         {
+            this.sauvegarde.verifieSiTerminee();
             DateTime dt = Serialization.deserializeLastSaveDate();
-            if (this.sauvegarde.getEstTerminee())
+            if (this.sauvegarde.verifieSiTerminee() == '2')
             {
-                this.sauvegarde.setEstTerminee(true);
                 this.lbEtatSauvegarde.Text = " Terminée.";
                 this.lbEtatSauvegarde.ForeColor = Color.Green;
             }
             else
-                if (!this.sauvegarde.getEstTerminee() && Directory.Exists(ConfigurationManager.AppSettings["path"] + @"\" + Environment.UserName + @"\" + dt.Day + "." + dt.Month + "." + dt.Year + ".tmp"))
+                if (this.sauvegarde.verifieSiTerminee() == '1')
                 {
                     this.lbEtatSauvegarde.Text = " En cours.";
                     this.lbEtatSauvegarde.ForeColor = Color.Orange;
                 }
                 else
-                {
-                    this.lbEtatSauvegarde.Text = " Incomplète.";
-                    this.lbEtatSauvegarde.ForeColor = Color.Red;
-                }
+                    if(this.sauvegarde.verifieSiTerminee() == '0')
+                        {
+                            this.lbEtatSauvegarde.Text = " Incomplète.";
+                            this.lbEtatSauvegarde.ForeColor = Color.Red;
+                        }
+                    else
+                        if (this.sauvegarde.verifieSiTerminee() == ' ')
+                        {
+                            this.lbEtatSauvegarde.Text = "N/A";
+                            this.lbEtatSauvegarde.ForeColor = Color.Red;
+                        }
 
             if (this.checkSaveConditions())
             {
@@ -318,7 +326,7 @@ namespace clientbackup
 
         public void initSaveViewer()
         {
-            SaveViewer sv = new SaveViewer();
+            SaveViewer sv = new SaveViewer(this.sauvegarde);
             sv.Show();
         }
 

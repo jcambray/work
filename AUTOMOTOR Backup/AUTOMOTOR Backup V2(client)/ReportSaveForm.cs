@@ -13,8 +13,6 @@ namespace clientbackup
 
     public partial class ReportSaveForm : Form
     {
-
-        private int nbMinutes;
         private MainForm m;
         private int i;
         private DateTime nxts;
@@ -36,10 +34,6 @@ namespace clientbackup
             this.timer1.Start();
         }
 
-        public int getNbMinutes()
-        {
-            return this.nbMinutes;
-        }
 
         private void btnOK_Click(object sender, EventArgs e)
         {

@@ -12,12 +12,12 @@ using System.Configuration;
 
 namespace clientbackup
 {
-    class Save
+    public class Save
     {
-        private bool estTerminée;
+        private char estTerminée;
         private string fichierCopie;
-        private int nbFichiersACopier;
         private int nbfichierscopie = 0;
+        private BackgroundWorker bgwk = null;
 
         public Save()
         {
@@ -77,7 +77,6 @@ namespace clientbackup
                 Directory.Move(this.getSaveRoot() + @".tmp", this.getSaveRoot()); 
             }
             catch{ }
-            MessageBox.Show("sauvegarde terminée.");
         }
 
         public static void restartComputer()
@@ -176,36 +175,49 @@ namespace clientbackup
             return ConfigurationManager.AppSettings["path"] + @"\" + Environment.UserName + @"\" + DateTime.Now.Day + "." + DateTime.Now.Month + "." + DateTime.Now.Year;
         }
 
-        public bool verifieSiTerminee(BackgroundWorker bgw)
+        public char verifieSiTerminee()
         {
-            bool ok = false;
+            char ok = '0';
             DateTime dt = Serialization.deserializeLastSaveDate();
-            if(Directory.Exists(ConfigurationManager.AppSettings["path"] + @"\" + Environment.UserName + @"\" + dt.Day + "." + dt.Month + "." + dt.Year))
+            if (this.bgwk != null)
             {
-                //MessageBox.Show(ConfigurationManager.AppSettings["path"] + @"\" + Environment.UserName + @"\" + dt.Day + "." + dt.Month + "." + dt.Year);
-                ok = true;
+                if (Directory.Exists(ConfigurationManager.AppSettings["path"] + @"\" + Environment.UserName + @"\" + dt.Day + "." + dt.Month + "." + dt.Year) && !this.bgwk.IsBusy)
+                {
+                    ok = '2';
+                }
+                else
+                    if (Directory.Exists(ConfigurationManager.AppSettings["path"] + @"\" + Environment.UserName + @"\" + dt.Day + "." + dt.Month + "." + dt.Year + ".tmp") && !this.bgwk.IsBusy)
+                    {
+                        ok = '0';
+                    }
+                    else
+                        if (Directory.Exists(ConfigurationManager.AppSettings["path"] + @"\" + Environment.UserName + @"\" + dt.Day + "." + dt.Month + "." + dt.Year + ".tmp") && this.bgwk.IsBusy)
+                        {
+                            ok = '1';
+                        }
+                Serialization.serializeEtatDerniereSave(ok);
+            }
+            else
+            {
+                ok = Serialization.deserializeEtatDerniereSave();
             }
             return ok;
         }
 
-        public bool getEstTerminee()
+        public char getEstTerminee()
         {
             return this.estTerminée;
         }
 
-        public void setEstTerminee(bool b)
+        public void setEstTerminee()
         {
-            this.estTerminée = b;
+            this.estTerminée = this.verifieSiTerminee();
+            
         }
 
         public string getNomFichierCopie()
         {
             return this.fichierCopie;
-        }
-
-        public int getNbFichiersACopier()
-        {
-            return this.nbFichiersACopier;
         }
 
         public int getNbFichiersCopie()
@@ -247,6 +259,11 @@ namespace clientbackup
              c[0] = c1;
             formated = s.Split(c, 3)[2];
             return formated;
+        }
+
+        public void setBgwk(BackgroundWorker bg)
+        {
+            this.bgwk = bg;
         }
     }
 

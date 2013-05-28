@@ -162,8 +162,32 @@ namespace clientbackup
             catch
             {
                 return null;
+            } 
+        }
+
+        public static void serializeEtatDerniereSave(char c)
+        {
+            FileStream fichier = new FileStream(Environment.CurrentDirectory + @"\lastSaveState.aut", FileMode.Create);
+            BinaryFormatter bf = new BinaryFormatter();
+            bf.Serialize(fichier, c);
+            fichier.Close();
+        }
+
+        public static char deserializeEtatDerniereSave()
+        {
+            try
+            {
+                FileStream fichier = new FileStream(Environment.CurrentDirectory + @"\lastSaveState.aut", FileMode.Open);
+                BinaryFormatter bf = new BinaryFormatter();
+                char c = (char)bf.Deserialize(fichier);
+                fichier.Dispose();
+                return c;
             }
-            
+            catch
+            {
+                serializeEtatDerniereSave(' ');
+                return ' ';
+            }
         }
     }
 }
