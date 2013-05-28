@@ -80,5 +80,10 @@ namespace clientbackup
                 this.progressBar.Value = (int)this.nb;
             }
         }
+
+        public  BackgroundWorker getBGW()
+        {
+            return this.backgroundWorker;
+        }
     }
 }

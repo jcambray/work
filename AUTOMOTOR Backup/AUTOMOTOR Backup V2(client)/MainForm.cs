@@ -26,24 +26,10 @@ namespace clientbackup
         public MainForm()
         {
             InitializeComponent();
-            RegistryModifier.StartWithWindows();
             this.Text = "AUTOMOTOR Backup v" + Application.ProductVersion;
             this.lbUtilisateur1.Text = Environment.UserName;
             this.minimize();
             this.sauvegarde = new Save();
-
- 
-            if (this.sauvegarde.verifieSiTerminee())
-            {
-                this.sauvegarde.setEstTerminee(true);
-                this.lbEtatSauvegarde.Text = " Terminée.";
-                this.lbEtatSauvegarde.ForeColor = Color.Green;
-            }
-            else
-            {
-                this.lbEtatSauvegarde.Text = " Incomplète.";
-                this.lbEtatSauvegarde.ForeColor = Color.Red;
-            }
 
             //chargement des paramètres de l'application
             //Configuration du Timer
@@ -148,6 +134,7 @@ namespace clientbackup
         }
 
         #region A chaque "tick" du timer:
+        //Verification de l'etat de la dernière sauvegarde
         //Si les condition necessaire au lancement d'une sauvegarde sont reunies
         //aret du timer
         //demande de report de la sauvegarde
@@ -158,6 +145,25 @@ namespace clientbackup
         //lancement du redémarrage de l'ordinateur
         private void myTimer_Tick(object sender, EventArgs e)
         {
+            DateTime dt = Serialization.deserializeLastSaveDate();
+            if (this.sauvegarde.getEstTerminee())
+            {
+                this.sauvegarde.setEstTerminee(true);
+                this.lbEtatSauvegarde.Text = " Terminée.";
+                this.lbEtatSauvegarde.ForeColor = Color.Green;
+            }
+            else
+                if (!this.sauvegarde.getEstTerminee() && Directory.Exists(ConfigurationManager.AppSettings["path"] + @"\" + Environment.UserName + @"\" + dt.Day + "." + dt.Month + "." + dt.Year + ".tmp"))
+                {
+                    this.lbEtatSauvegarde.Text = " En cours.";
+                    this.lbEtatSauvegarde.ForeColor = Color.Orange;
+                }
+                else
+                {
+                    this.lbEtatSauvegarde.Text = " Incomplète.";
+                    this.lbEtatSauvegarde.ForeColor = Color.Red;
+                }
+
             if (this.checkSaveConditions())
             {
                 this.myTimer.Stop();

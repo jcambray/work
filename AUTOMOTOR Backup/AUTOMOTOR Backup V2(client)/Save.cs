@@ -176,11 +176,13 @@ namespace clientbackup
             return ConfigurationManager.AppSettings["path"] + @"\" + Environment.UserName + @"\" + DateTime.Now.Day + "." + DateTime.Now.Month + "." + DateTime.Now.Year;
         }
 
-        public bool verifieSiTerminee()
+        public bool verifieSiTerminee(BackgroundWorker bgw)
         {
             bool ok = false;
-            if (!Directory.Exists(this.getSaveRoot() + @".tmp"))
+            DateTime dt = Serialization.deserializeLastSaveDate();
+            if(Directory.Exists(ConfigurationManager.AppSettings["path"] + @"\" + Environment.UserName + @"\" + dt.Day + "." + dt.Month + "." + dt.Year))
             {
+                //MessageBox.Show(ConfigurationManager.AppSettings["path"] + @"\" + Environment.UserName + @"\" + dt.Day + "." + dt.Month + "." + dt.Year);
                 ok = true;
             }
             return ok;
