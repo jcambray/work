@@ -31,7 +31,7 @@ namespace clientbackup
             this.files = Serialization.deserializeXML();
             ImageList imgList = new ImageList();
             this.treeview.ImageList = imgList;
-            imgList.Images.Add(System.Drawing.Image.FromFile("dossier_windows.png"));
+            imgList.Images.Add(System.Drawing.Image.FromFile(Environment.CurrentDirectory + @"/Data/dossier_windows.png"));
             this.populatetreeView();
             
 
@@ -214,7 +214,7 @@ namespace clientbackup
             ConfigurationManager.RefreshSection("appSettings");
             config.Save(ConfigurationSaveMode.Modified);
             Configuration conf = new Configuration();
-            DateTime lastSave = Serialization.deserializeLastSaveDate();
+            DateTime lastSave = Serialization.deserializeLastSaveDate(true);
             //Sauvegarde le la date de la prochaine sauvegarde
             DateTime nextSaveDate = MainForm.initNextSave(/*lastSave*/DateTime.Now, conf.getPeriode(), conf.getHeure(), conf.getMinute());
 

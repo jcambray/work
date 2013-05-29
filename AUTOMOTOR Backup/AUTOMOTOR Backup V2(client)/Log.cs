@@ -3,6 +3,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Windows.Forms;
 
 namespace clientbackup
 {
@@ -10,11 +11,11 @@ namespace clientbackup
     {
         public static void write(string s)
         {
-            if(!File.Exists(Environment.CurrentDirectory + @"\Log.txt"))
+            if(!File.Exists(Environment.CurrentDirectory + @"/Data/Log.txt"))
             {
-                File.CreateText(Environment.CurrentDirectory + @"\Log.txt");
+                File.CreateText(Environment.CurrentDirectory + @"/Data/Log.txt");
             }
-            StreamWriter sw = File.AppendText(Environment.CurrentDirectory + @"\Log.txt");
+            StreamWriter sw = File.AppendText(Environment.CurrentDirectory + @"/Data/Log.txt");
             sw.WriteLine(s);
             sw.Flush();
             sw.Close();
@@ -48,14 +49,26 @@ namespace clientbackup
 
         public static void open()
         {
-            string path = Environment.CurrentDirectory + @"\Log.txt";
+            string path = Environment.CurrentDirectory + @"/Data/Log.txt";
             if(!File.Exists(path))
             {
-                File.Create(Environment.CurrentDirectory + @"\Log.txt");
+                File.Create(Environment.CurrentDirectory + @"/Data/Log.txt");
             }
             System.Diagnostics.ProcessStartInfo psi = new System.Diagnostics.ProcessStartInfo(path);
-            System.Diagnostics.Process.Start(psi);
-            
+            System.Diagnostics.Process.Start(psi); 
+        }
+
+        public static void effacer()
+        {
+            try
+            {
+                File.Delete(Environment.CurrentDirectory + @"/Data/Log.txt");
+                File.CreateText(Environment.CurrentDirectory + @"/Data/Log.txt");
+            }
+            catch(Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
         }
     }
 }

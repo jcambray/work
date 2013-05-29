@@ -26,6 +26,8 @@ namespace clientbackup
         public MainForm()
         {
             InitializeComponent();
+            this.lbProchaineSauvegarde1.Visible = false;
+            this.lbCompteARebours.Visible = false;
             this.Text = "AUTOMOTOR Backup v" + Application.ProductVersion;
             this.lbUtilisateur1.Text = Environment.UserName;
             this.minimize();
@@ -147,7 +149,7 @@ namespace clientbackup
         private void myTimer_Tick(object sender, EventArgs e)
         {
             this.sauvegarde.verifieSiTerminee();
-            DateTime dt = Serialization.deserializeLastSaveDate();
+            DateTime dt = Serialization.deserializeLastSaveDate(false);
             if (this.sauvegarde.verifieSiTerminee() == '2')
             {
                 this.lbEtatSauvegarde.Text = " Terminée.";
@@ -195,7 +197,7 @@ namespace clientbackup
 
         public bool checkSaveConditions()
         {
-            DateTime lastSave = Serialization.deserializeLastSaveDate();
+            DateTime lastSave = Serialization.deserializeLastSaveDate(false);
             bool check = false;
             this.c = new Configuration();
             int heure = Convert.ToInt32(c.getHeure());
@@ -207,7 +209,7 @@ namespace clientbackup
                 //this.nextSave = c.getNextSaveDate();
                 this.tempsRestant = this.nextSave - DateTime.Now;
                 TimeSpan tempsEcoule = DateTime.Now - lastSave;
-                if (Serialization.deserializeLastSaveDate().Year == 2000)
+                if (Serialization.deserializeLastSaveDate(false).Year == 2000)
                 {
                     this.lbDateProchaineSauvegarde1.ForeColor = Color.Red;
                     this.lbDateProchaineSauvegarde1.Text = "non planifiée";
@@ -266,7 +268,7 @@ namespace clientbackup
 
         public void actualiseLbCompteARebours(TimeSpan t)
         {
-            if (Serialization.deserializeLastSaveDate().Year == 2000)
+            if (Serialization.deserializeLastSaveDate(false).Year == 2000)
             {
 
                 this.lbCompteARebours.Text = "non planifiée";
@@ -304,7 +306,7 @@ namespace clientbackup
 
         public void afficheAlerte()
         {
-            DateTime lastSave = Serialization.deserializeLastSaveDate();
+            DateTime lastSave = Serialization.deserializeLastSaveDate(false);
             this.c = new Configuration();
             int heure = Convert.ToInt32(c.getHeure());
             int minute = Convert.ToInt32(c.getMinute());
@@ -328,11 +330,6 @@ namespace clientbackup
         {
             SaveViewer sv = new SaveViewer(this.sauvegarde);
             sv.Show();
-        }
-
-        private void logToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Log.open();
         }
 
         public bool isOpen(Form frm)
@@ -381,6 +378,20 @@ namespace clientbackup
         public DateTime getNextSave()
         {
             return this.nextSave;
+        }
+
+        private void effacerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+           DialogResult r =  MessageBox.Show("Effacer le log","êtes-vous sûr?",MessageBoxButtons.YesNo);
+           if (r == System.Windows.Forms.DialogResult.Yes)
+           {
+               Log.effacer();
+           }
+        }
+
+        private void consulterToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Log.open();
         }
     }
 }

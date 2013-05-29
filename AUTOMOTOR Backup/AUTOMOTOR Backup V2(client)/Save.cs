@@ -37,7 +37,7 @@ namespace clientbackup
             //création du dossier de sauvegarde de l'utilisateur
             try
             {
-               if (Directory.Exists(path))
+                if (Directory.Exists(path))
                 {
                     Directory.Delete(path, true);
                 }
@@ -57,26 +57,36 @@ namespace clientbackup
             {
                 try
                 {
-                    string savedDirPath = "";
-                    savedDirPath += path + @"\" + this.toSavedFilePathFormat(s);
-                    if (!Directory.Exists(savedDirPath))
+                    if (!this.bgwk.CancellationPending)
                     {
-                        Directory.CreateDirectory(savedDirPath);
+                        string savedDirPath = "";
+                        savedDirPath += path + @"\" + this.toSavedFilePathFormat(s);
+                        if (!Directory.Exists(savedDirPath))
+                        {
+                            Directory.CreateDirectory(savedDirPath);
+                        }
+                        this.copyFiles(s, this.bgwk);
+                        this.copySubDirectories(s, this.bgwk);
+
                     }
-                    this.copyFiles(s, bgw);
-                    this.copySubDirectories(s,bgw);
+                    else
+                    {
+                        break;
+                    }
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show(ex.Message);
                 }
             }
-            try
-            {
-                Log.notifieFinSauvegarde("-" + DateTime.Now.Day.ToString() + "." + DateTime.Now.Month.ToString() + "." + DateTime.Now.Year.ToString() + " à " + DateTime.Now.Hour + "h" + DateTime.Now.Minute + ".");
-                Directory.Move(this.getSaveRoot() + @".tmp", this.getSaveRoot()); 
-            }
-            catch{ }
+          
+                try
+                {
+                   
+                        Log.notifieFinSauvegarde("-" + DateTime.Now.Day.ToString() + "." + DateTime.Now.Month.ToString() + "." + DateTime.Now.Year.ToString() + " à " + DateTime.Now.Hour + "h" + DateTime.Now.Minute + ".");
+                        Directory.Move(this.getSaveRoot() + @".tmp", this.getSaveRoot());
+                }
+                catch { }
         }
 
         public static void restartComputer()
@@ -127,7 +137,7 @@ namespace clientbackup
                     }
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Log.write("----------ERREUR----------\n");
                 Log.write("\n");
@@ -140,13 +150,13 @@ namespace clientbackup
             }
         }
 
-        public void copySubDirectories(string savedDirPath,BackgroundWorker bgw)
+        public void copySubDirectories(string savedDirPath, BackgroundWorker bgw)
         {
             try
             {
                 string[] subDirectories = Directory.GetDirectories(@"C:\" + savedDirPath);
                 foreach (string subDir in subDirectories)
-               {
+                {
                     DirectoryInfo d = new DirectoryInfo(subDir);
                     string savedDirPath2 = this.toSavedFilePathFormat(savedDirPath);
                     savedDirPath2 = this.getSaveRoot() + @".tmp" + @"\" + this.toSavedFilePathFormat(savedDirPath) + @"\" + d.Name;
@@ -160,13 +170,13 @@ namespace clientbackup
                         Directory.CreateDirectory(savedDirPath2);
                     }
                     string formatedSubdir = subDir.Remove(0, 3);
-                    this.copySubDirectories(formatedSubdir,bgw);
-                    this.copyFiles(savedDirPath + @"\" + d.Name,bgw);
+                    this.copySubDirectories(formatedSubdir, bgw);
+                    this.copyFiles(savedDirPath + @"\" + d.Name, bgw);
                 }
             }
             catch
             {
-              
+
             }
         }
 
@@ -178,29 +188,25 @@ namespace clientbackup
         public char verifieSiTerminee()
         {
             char ok = '0';
-            DateTime dt = Serialization.deserializeLastSaveDate();
-            if (this.bgwk != null)
+            DateTime dt = Serialization.deserializeLastSaveDate(false);
+
+            if (Directory.Exists(ConfigurationManager.AppSettings["path"] + @"\" + Environment.UserName + @"\" + dt.Day + "." + dt.Month + "." + dt.Year) && this.bgwk == null)
             {
-                if (Directory.Exists(ConfigurationManager.AppSettings["path"] + @"\" + Environment.UserName + @"\" + dt.Day + "." + dt.Month + "." + dt.Year) && !this.bgwk.IsBusy)
-                {
-                    ok = '2';
-                }
-                else
-                    if (Directory.Exists(ConfigurationManager.AppSettings["path"] + @"\" + Environment.UserName + @"\" + dt.Day + "." + dt.Month + "." + dt.Year + ".tmp") && !this.bgwk.IsBusy)
-                    {
-                        ok = '0';
-                    }
-                    else
-                        if (Directory.Exists(ConfigurationManager.AppSettings["path"] + @"\" + Environment.UserName + @"\" + dt.Day + "." + dt.Month + "." + dt.Year + ".tmp") && this.bgwk.IsBusy)
-                        {
-                            ok = '1';
-                        }
-                Serialization.serializeEtatDerniereSave(ok);
+                ok = '2';
             }
             else
-            {
-                ok = Serialization.deserializeEtatDerniereSave();
-            }
+                if (Directory.Exists(ConfigurationManager.AppSettings["path"] + @"\" + Environment.UserName + @"\" + dt.Day + "." + dt.Month + "." + dt.Year + ".tmp") && this.bgwk == null)
+                {
+                    ok = '0';
+                }
+                else
+                    if (Directory.Exists(ConfigurationManager.AppSettings["path"] + @"\" + Environment.UserName + @"\" + dt.Day + "." + dt.Month + "." + dt.Year + ".tmp") && this.bgwk != null)
+                    {
+                        ok = '1';
+                    }
+              
+                Serialization.serializeEtatDerniereSave(ok);
+          
             return ok;
         }
 
@@ -212,7 +218,7 @@ namespace clientbackup
         public void setEstTerminee()
         {
             this.estTerminée = this.verifieSiTerminee();
-            
+
         }
 
         public string getNomFichierCopie()
@@ -237,16 +243,16 @@ namespace clientbackup
                 }
                 catch
                 {
-                }     
+                }
             }
 
-            return nbfichiers;    
+            return nbfichiers;
         }
 
         public bool estUnRaccourci(string path)
         {
             bool ok = false;
-            if(new FileInfo(path).Extension == ".lnk")
+            if (new FileInfo(path).Extension == ".lnk")
             { ok = true; }
             return ok;
         }
@@ -255,8 +261,8 @@ namespace clientbackup
         {
             string formated;
             char[] c = new char[5];
-             char c1 = '\\';
-             c[0] = c1;
+            char c1 = '\\';
+            c[0] = c1;
             formated = s.Split(c, 3)[2];
             return formated;
         }

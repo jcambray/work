@@ -42,19 +42,20 @@ namespace clientbackup
         }
 
    
-
         private void backgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             backgroundWorker.Dispose();
             backgroundWorker.CancelAsync();
             this.Close();
             MessageBox.Show("sauvegarde terminée.");
+            this.s.setBgwk(null);
         }
 
         private void SaveViewer_FormClosing(object sender, FormClosingEventArgs e)
         {
-            backgroundWorker.Dispose();
             backgroundWorker.CancelAsync();
+            this.s.setBgwk(null);
+            backgroundWorker.Dispose();
         }
 
         private void timer1_Tick(object sender, EventArgs e)

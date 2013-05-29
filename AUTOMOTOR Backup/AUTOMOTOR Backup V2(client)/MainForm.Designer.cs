@@ -35,6 +35,8 @@
             this.réduireToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.configuraionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.logToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.consulterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.effacerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.btnSave = new System.Windows.Forms.Button();
             this.myTimer = new System.Windows.Forms.Timer(this.components);
             this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
@@ -87,10 +89,26 @@
             // 
             // logToolStripMenuItem
             // 
+            this.logToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.consulterToolStripMenuItem,
+            this.effacerToolStripMenuItem});
             this.logToolStripMenuItem.Name = "logToolStripMenuItem";
             this.logToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
             this.logToolStripMenuItem.Text = "Log";
-            this.logToolStripMenuItem.Click += new System.EventHandler(this.logToolStripMenuItem_Click);
+            // 
+            // consulterToolStripMenuItem
+            // 
+            this.consulterToolStripMenuItem.Name = "consulterToolStripMenuItem";
+            this.consulterToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.consulterToolStripMenuItem.Text = "Consulter";
+            this.consulterToolStripMenuItem.Click += new System.EventHandler(this.consulterToolStripMenuItem_Click);
+            // 
+            // effacerToolStripMenuItem
+            // 
+            this.effacerToolStripMenuItem.Name = "effacerToolStripMenuItem";
+            this.effacerToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.effacerToolStripMenuItem.Text = "Effacer";
+            this.effacerToolStripMenuItem.Click += new System.EventHandler(this.effacerToolStripMenuItem_Click);
             // 
             // btnSave
             // 
@@ -255,6 +273,8 @@
         private System.Windows.Forms.Label lbDateProchaineSauvegarde1;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label lbEtatSauvegarde;
+        private System.Windows.Forms.ToolStripMenuItem consulterToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem effacerToolStripMenuItem;
     }
 }
 

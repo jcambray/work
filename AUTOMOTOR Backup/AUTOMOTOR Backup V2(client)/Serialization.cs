@@ -15,7 +15,7 @@ namespace clientbackup
     {
         public static void serialize(bool o)
         {
-            FileStream fichier = new FileStream("autologon.txt", FileMode.Create);
+            FileStream fichier = new FileStream(Environment.CurrentDirectory + @"/Data/autologon.txt", FileMode.Create);
             BinaryFormatter bf = new BinaryFormatter();
             bf.Serialize(fichier, o);
             fichier.Close();
@@ -23,7 +23,7 @@ namespace clientbackup
 
         public static void serialize(ArrayList list)
         {
-            FileStream fichier = new FileStream("files.txt", FileMode.Create);
+            FileStream fichier = new FileStream(Environment.CurrentDirectory + @"/Data/files.txt", FileMode.Create);
             BinaryFormatter bf = new BinaryFormatter();
             bf.Serialize(fichier, list);
             fichier.Close();
@@ -33,7 +33,7 @@ namespace clientbackup
         {
             try
             {
-                FileStream fichier = new FileStream("autologon.txt", FileMode.Open);
+                FileStream fichier = new FileStream(Environment.CurrentDirectory + @"/Data/autologon.txt", FileMode.Open);
                 BinaryFormatter bf = new BinaryFormatter();
                 bool o = (bool)bf.Deserialize(fichier);
                 fichier.Dispose();
@@ -50,7 +50,7 @@ namespace clientbackup
 
         public static ArrayList deserializeList()
         {
-            FileStream fichier = new FileStream("files.txt", FileMode.Open);
+            FileStream fichier = new FileStream(Environment.CurrentDirectory + @"/Data/files.txt", FileMode.Open);
             BinaryFormatter bf = new BinaryFormatter();
             ArrayList list = (ArrayList)bf.Deserialize(fichier);
             fichier.Dispose();
@@ -60,7 +60,7 @@ namespace clientbackup
         public static void serializeToXML(ArrayList list)
         {
             XmlSerializer serializer = new XmlSerializer(typeof(ArrayList));
-            FileStream fichier = new FileStream("listXML.xml", FileMode.Create);
+            FileStream fichier = new FileStream(Environment.CurrentDirectory + @"/Data/listXML.xml", FileMode.Create);
             serializer.Serialize(fichier, list);
             fichier.Close();
         }
@@ -69,7 +69,7 @@ namespace clientbackup
         {
             try
             {
-                FileStream fichier = new FileStream("listXML.xml", FileMode.OpenOrCreate);
+                FileStream fichier = new FileStream(Environment.CurrentDirectory + @"/Data/listXML.xml", FileMode.OpenOrCreate);
                 XmlSerializer serializer = new XmlSerializer(typeof(ArrayList));
                 ArrayList list = (ArrayList)serializer.Deserialize(fichier);
                 fichier.Close();
@@ -83,17 +83,17 @@ namespace clientbackup
 
         public static void serializeLastSaveDate(DateTime date)
         {
-            FileStream fichier = new FileStream("lastSaveDate.aut", FileMode.Create);
+            FileStream fichier = new FileStream(Environment.CurrentDirectory + @"/Data/lastSaveDate.aut", FileMode.Create);
             BinaryFormatter bf = new BinaryFormatter();
             bf.Serialize(fichier, date);
             fichier.Close();
         }
 
-        public static DateTime deserializeLastSaveDate()
+        public static DateTime deserializeLastSaveDate(bool init)
         {
             try
             {
-                FileStream fichier = new FileStream(Environment.CurrentDirectory + @"\lastSaveDate.aut", FileMode.Open);
+                FileStream fichier = new FileStream(Environment.CurrentDirectory + @"/Data/lastSaveDate.aut", FileMode.Open);
                 BinaryFormatter bf = new BinaryFormatter();
                 DateTime dt = (DateTime)bf.Deserialize(fichier);
                 fichier.Dispose();
@@ -101,7 +101,10 @@ namespace clientbackup
             }
             catch (FileNotFoundException)
             {
-                serializeLastSaveDate(DateTime.Now);
+                if (init)
+                {
+                    serializeLastSaveDate(DateTime.Now);
+                }
                 return new DateTime(2000,1,1);
             }
         }
@@ -122,7 +125,7 @@ namespace clientbackup
 
         public static void serializeLastVirtualSaveDate()
         {
-            FileStream fichier = new FileStream(Environment.CurrentDirectory + @"\lastVirtualSaveDate.aut", FileMode.Create);
+            FileStream fichier = new FileStream(Environment.CurrentDirectory + @"/Data/lastVirtualSaveDate.aut", FileMode.Create);
             BinaryFormatter bf = new BinaryFormatter();
             bf.Serialize(fichier, DateTime.Now);
             fichier.Close();
@@ -130,11 +133,11 @@ namespace clientbackup
 
         public static DateTime deserializeLastVirtualSaveDate()
         {
-            if (!File.Exists(Environment.CurrentDirectory + @"\lastVirtualSaveDate.aut"))
+            if (!File.Exists(Environment.CurrentDirectory + @"/Data/lastVirtualSaveDate.aut"))
             {
                 serializeLastVirtualSaveDate();
             }
-            FileStream fichier = new FileStream(Environment.CurrentDirectory + @"\lastVirtualSaveDate.aut", FileMode.Open);
+            FileStream fichier = new FileStream(Environment.CurrentDirectory + @"/Data/lastVirtualSaveDate.aut", FileMode.Open);
             BinaryFormatter bf = new BinaryFormatter();
             DateTime dt = (DateTime)bf.Deserialize(fichier);
             fichier.Dispose();
@@ -143,7 +146,7 @@ namespace clientbackup
 
         public static void serializeMDPAdmin(string mdp)
         {
-            FileStream fichier = new FileStream(Environment.CurrentDirectory + @"\MDPAdmin.aut", FileMode.Create);
+            FileStream fichier = new FileStream(Environment.CurrentDirectory + @"/Data/MDPAdmin.aut", FileMode.Create);
             BinaryFormatter bf = new BinaryFormatter();
             bf.Serialize(fichier, mdp);
             fichier.Close();
@@ -153,7 +156,7 @@ namespace clientbackup
         {
             try
             {
-                FileStream fichier = new FileStream(Environment.CurrentDirectory + @"\MDPAdmin.aut", FileMode.Open);
+                FileStream fichier = new FileStream(Environment.CurrentDirectory + @"/Data/MDPAdmin.aut", FileMode.Open);
                 BinaryFormatter bf = new BinaryFormatter();
                 string mdp = (string)bf.Deserialize(fichier);
                 fichier.Dispose();
@@ -167,7 +170,7 @@ namespace clientbackup
 
         public static void serializeEtatDerniereSave(char c)
         {
-            FileStream fichier = new FileStream(Environment.CurrentDirectory + @"\lastSaveState.aut", FileMode.Create);
+            FileStream fichier = new FileStream(Environment.CurrentDirectory + @"/Data/lastSaveState.aut", FileMode.Create);
             BinaryFormatter bf = new BinaryFormatter();
             bf.Serialize(fichier, c);
             fichier.Close();
@@ -177,7 +180,7 @@ namespace clientbackup
         {
             try
             {
-                FileStream fichier = new FileStream(Environment.CurrentDirectory + @"\lastSaveState.aut", FileMode.Open);
+                FileStream fichier = new FileStream(Environment.CurrentDirectory + @"/Data/lastSaveState.aut", FileMode.Open);
                 BinaryFormatter bf = new BinaryFormatter();
                 char c = (char)bf.Deserialize(fichier);
                 fichier.Dispose();
