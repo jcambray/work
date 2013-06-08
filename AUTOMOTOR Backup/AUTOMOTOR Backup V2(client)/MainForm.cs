@@ -118,14 +118,13 @@ namespace clientbackup
         //lancement du redémarrage de l'ordinateur
         private void btnSave_Click(object sender, EventArgs e)
         {
-            this.initSaveViewer();
-            /*if (MessageBox.Show("La sauvegarde necessite le redemarrage de l'ordinateur, voulez-vous redémarrer maintenant?", " ", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            if (MessageBox.Show("La sauvegarde necessite le redemarrage de l'ordinateur, voulez-vous redémarrer maintenant?", " ", MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
                 RegistryModifier.enableAutoLogon(ConfigurationManager.AppSettings["password"]);
                 this.isAutoLogonEnabled = true;
                 Serialization.serialize(this.isAutoLogonEnabled);
                 Save.restartComputer();
-            }*/
+            }
             
         }
         #endregion
@@ -148,6 +147,8 @@ namespace clientbackup
         //lancement du redémarrage de l'ordinateur
         private void myTimer_Tick(object sender, EventArgs e)
         {
+            this.checkSaveNumber();
+
             this.sauvegarde.verifieSiTerminee();
             DateTime dt = Serialization.deserializeLastSaveDate(false);
             if (this.sauvegarde.verifieSiTerminee() == '2')
@@ -392,6 +393,17 @@ namespace clientbackup
         private void consulterToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Log.open();
+        }
+
+        public void checkSaveNumber()
+        {
+            int nbSaves = Directory.GetFiles(this.c.getPath() + @"/" + Environment.UserName).Length;
+            string[] savesFolders1 = Directory.GetFiles(c.getPath() + @"/" + Environment.UserName);
+            DateTime dt =  Convert.ToDateTime(savesFolders1[0]);
+            if (nbSaves > this.c.getNbSaves())
+            {
+                string[] savesFolders = Directory.GetDirectories(c.getPath());
+            }
         }
     }
 }
