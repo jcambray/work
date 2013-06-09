@@ -49,6 +49,9 @@
             this.lbDateProchaineSauvegarde1 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.lbEtatSauvegarde = new System.Windows.Forms.Label();
+            this.lbcible1 = new System.Windows.Forms.Label();
+            this.lbCible2 = new System.Windows.Forms.Label();
+            this.btnCible = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
@@ -99,14 +102,14 @@
             // consulterToolStripMenuItem
             // 
             this.consulterToolStripMenuItem.Name = "consulterToolStripMenuItem";
-            this.consulterToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.consulterToolStripMenuItem.Size = new System.Drawing.Size(125, 22);
             this.consulterToolStripMenuItem.Text = "Consulter";
             this.consulterToolStripMenuItem.Click += new System.EventHandler(this.consulterToolStripMenuItem_Click);
             // 
             // effacerToolStripMenuItem
             // 
             this.effacerToolStripMenuItem.Name = "effacerToolStripMenuItem";
-            this.effacerToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.effacerToolStripMenuItem.Size = new System.Drawing.Size(125, 22);
             this.effacerToolStripMenuItem.Text = "Effacer";
             this.effacerToolStripMenuItem.Click += new System.EventHandler(this.effacerToolStripMenuItem_Click);
             // 
@@ -159,7 +162,7 @@
             // 
             this.lbProchaineSauvegarde1.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.lbProchaineSauvegarde1.AutoSize = true;
-            this.lbProchaineSauvegarde1.Location = new System.Drawing.Point(9, 172);
+            this.lbProchaineSauvegarde1.Location = new System.Drawing.Point(-3, 90);
             this.lbProchaineSauvegarde1.Name = "lbProchaineSauvegarde1";
             this.lbProchaineSauvegarde1.Size = new System.Drawing.Size(143, 13);
             this.lbProchaineSauvegarde1.TabIndex = 5;
@@ -169,7 +172,7 @@
             // 
             this.lbCompteARebours.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.lbCompteARebours.AutoSize = true;
-            this.lbCompteARebours.Location = new System.Drawing.Point(192, 172);
+            this.lbCompteARebours.Location = new System.Drawing.Point(192, 90);
             this.lbCompteARebours.Name = "lbCompteARebours";
             this.lbCompteARebours.Size = new System.Drawing.Size(35, 13);
             this.lbCompteARebours.TabIndex = 7;
@@ -188,7 +191,7 @@
             // lbDateProchaineSauvegarde
             // 
             this.lbDateProchaineSauvegarde.AutoSize = true;
-            this.lbDateProchaineSauvegarde.Location = new System.Drawing.Point(9, 209);
+            this.lbDateProchaineSauvegarde.Location = new System.Drawing.Point(9, 298);
             this.lbDateProchaineSauvegarde.Name = "lbDateProchaineSauvegarde";
             this.lbDateProchaineSauvegarde.Size = new System.Drawing.Size(168, 13);
             this.lbDateProchaineSauvegarde.TabIndex = 11;
@@ -197,7 +200,7 @@
             // lbDateProchaineSauvegarde1
             // 
             this.lbDateProchaineSauvegarde1.AutoSize = true;
-            this.lbDateProchaineSauvegarde1.Location = new System.Drawing.Point(192, 209);
+            this.lbDateProchaineSauvegarde1.Location = new System.Drawing.Point(192, 298);
             this.lbDateProchaineSauvegarde1.Name = "lbDateProchaineSauvegarde1";
             this.lbDateProchaineSauvegarde1.Size = new System.Drawing.Size(35, 13);
             this.lbDateProchaineSauvegarde1.TabIndex = 12;
@@ -206,7 +209,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(9, 253);
+            this.label1.Location = new System.Drawing.Point(9, 355);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(155, 13);
             this.label1.TabIndex = 13;
@@ -215,11 +218,38 @@
             // lbEtatSauvegarde
             // 
             this.lbEtatSauvegarde.AutoSize = true;
-            this.lbEtatSauvegarde.Location = new System.Drawing.Point(192, 253);
+            this.lbEtatSauvegarde.Location = new System.Drawing.Point(192, 355);
             this.lbEtatSauvegarde.Name = "lbEtatSauvegarde";
             this.lbEtatSauvegarde.Size = new System.Drawing.Size(35, 13);
             this.lbEtatSauvegarde.TabIndex = 14;
             this.lbEtatSauvegarde.Text = "label2";
+            // 
+            // lbcible1
+            // 
+            this.lbcible1.AutoSize = true;
+            this.lbcible1.Location = new System.Drawing.Point(9, 172);
+            this.lbcible1.Name = "lbcible1";
+            this.lbcible1.Size = new System.Drawing.Size(118, 13);
+            this.lbcible1.TabIndex = 15;
+            this.lbcible1.Text = "Cible de la sauvegarde:";
+            // 
+            // lbCible2
+            // 
+            this.lbCible2.AutoSize = true;
+            this.lbCible2.Location = new System.Drawing.Point(133, 172);
+            this.lbCible2.Name = "lbCible2";
+            this.lbCible2.Size = new System.Drawing.Size(35, 13);
+            this.lbCible2.TabIndex = 16;
+            this.lbCible2.Text = "label2";
+            // 
+            // btnCible
+            // 
+            this.btnCible.Location = new System.Drawing.Point(12, 189);
+            this.btnCible.Name = "btnCible";
+            this.btnCible.Size = new System.Drawing.Size(156, 23);
+            this.btnCible.TabIndex = 17;
+            this.btnCible.Text = "acceder aux fichiers";
+            this.btnCible.UseVisualStyleBackColor = true;
             // 
             // MainForm
             // 
@@ -228,6 +258,9 @@
             this.AutoSize = true;
             this.ClientSize = new System.Drawing.Size(323, 484);
             this.ControlBox = false;
+            this.Controls.Add(this.btnCible);
+            this.Controls.Add(this.lbCible2);
+            this.Controls.Add(this.lbcible1);
             this.Controls.Add(this.lbEtatSauvegarde);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.lbDateProchaineSauvegarde1);
@@ -275,6 +308,9 @@
         private System.Windows.Forms.Label lbEtatSauvegarde;
         private System.Windows.Forms.ToolStripMenuItem consulterToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem effacerToolStripMenuItem;
+        private System.Windows.Forms.Label lbcible1;
+        private System.Windows.Forms.Label lbCible2;
+        private System.Windows.Forms.Button btnCible;
     }
 }
 

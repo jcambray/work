@@ -37,6 +37,7 @@ namespace clientbackup
             //Configuration du Timer
             //Chargement de la date de la derniere sauvegarde
             this.c = new Configuration();
+            this.lbCible2.Text = this.c.getPath();
             this.configureTimer();
             this.nextSave = c.getNextSaveDate();
 
@@ -397,5 +398,11 @@ namespace clientbackup
         {
             Log.open();
         }
+
+        /*public void getEspaceUtilisé()
+        {
+            DirectoryInfo info = new DirectoryInfo(this.c.getPath());
+            
+        }*/
     }
 }
