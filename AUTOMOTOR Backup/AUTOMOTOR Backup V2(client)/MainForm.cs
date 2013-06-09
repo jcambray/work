@@ -397,13 +397,28 @@ namespace clientbackup
 
         public void checkSaveNumber()
         {
-            int nbSaves = Directory.GetFiles(this.c.getPath() + @"/" + Environment.UserName).Length;
-            string[] savesFolders1 = Directory.GetFiles(c.getPath() + @"/" + Environment.UserName);
-            DateTime dt =  Convert.ToDateTime(savesFolders1[0]);
+            string[] directories = Directory.GetDirectories(this.c.getPath() + @"/" + Environment.UserName);
+            int nbSaves = Directory.GetDirectories(this.c.getPath() + @"/" + Environment.UserName).Length;
             if (nbSaves > this.c.getNbSaves())
             {
-                string[] savesFolders = Directory.GetDirectories(c.getPath());
+                DateTime dt = Directory.GetCreationTime(directories[0]);
+                for (int i = 1; i >= directories.Length; i++)
+                {
+                    DateTime dateCreation = Directory.GetCreationTime(directories[i]);
+                    if(dt.CompareTo(dateCreation) < 0)
+                    {
+                        dt = dateCreation;
+                    }
+                }
+                foreach (string s in directories)
+                {
+                    if (dt == Directory.GetCreationTime(s))
+                    {
+                        Directory.Delete(s, true);
+                    }
+                }
             }
+
         }
     }
 }
