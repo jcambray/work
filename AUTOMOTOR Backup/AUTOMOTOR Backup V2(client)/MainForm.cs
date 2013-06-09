@@ -47,12 +47,15 @@ namespace clientbackup
             //Si l'AutoLogon est activé en base de registre Windows
             //Désactivation de l'autoLogon en base de registre Windows
             // mise à jour et sauvegarde de la valeur booléenne
+            // suppression de la sauvegarde la plus ancienne si le nombre maxi de sauvegarde sera dépassé
+            //lancement de la sauvegarde
             this.isAutoLogonEnabled = (bool)Serialization.deserialize();
             if (this.isAutoLogonEnabled == true)
             {
                 RegistryModifier.disableAutoLogon();
                 this.isAutoLogonEnabled = false;
                 Serialization.serialize(this.isAutoLogonEnabled);
+                this.sauvegarde.checkSaveNumber();
                 this.initSaveViewer();
             }
          }
@@ -118,13 +121,15 @@ namespace clientbackup
         //lancement du redémarrage de l'ordinateur
         private void btnSave_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("La sauvegarde necessite le redemarrage de l'ordinateur, voulez-vous redémarrer maintenant?", " ", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            this.sauvegarde.checkSaveNumber();
+            this.initSaveViewer();
+            /*if (MessageBox.Show("La sauvegarde necessite le redemarrage de l'ordinateur, voulez-vous redémarrer maintenant?", " ", MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
                 RegistryModifier.enableAutoLogon(ConfigurationManager.AppSettings["password"]);
                 this.isAutoLogonEnabled = true;
                 Serialization.serialize(this.isAutoLogonEnabled);
                 Save.restartComputer();
-            }
+            }*/
             
         }
         #endregion
@@ -147,8 +152,6 @@ namespace clientbackup
         //lancement du redémarrage de l'ordinateur
         private void myTimer_Tick(object sender, EventArgs e)
         {
-            this.checkSaveNumber();
-
             this.sauvegarde.verifieSiTerminee();
             DateTime dt = Serialization.deserializeLastSaveDate(false);
             if (this.sauvegarde.verifieSiTerminee() == '2')
@@ -393,32 +396,6 @@ namespace clientbackup
         private void consulterToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Log.open();
-        }
-
-        public void checkSaveNumber()
-        {
-            string[] directories = Directory.GetDirectories(this.c.getPath() + @"/" + Environment.UserName);
-            int nbSaves = Directory.GetDirectories(this.c.getPath() + @"/" + Environment.UserName).Length;
-            if (nbSaves > this.c.getNbSaves())
-            {
-                DateTime dt = Directory.GetCreationTime(directories[0]);
-                for (int i = 1; i >= directories.Length; i++)
-                {
-                    DateTime dateCreation = Directory.GetCreationTime(directories[i]);
-                    if(dt.CompareTo(dateCreation) < 0)
-                    {
-                        dt = dateCreation;
-                    }
-                }
-                foreach (string s in directories)
-                {
-                    if (dt == Directory.GetCreationTime(s))
-                    {
-                        Directory.Delete(s, true);
-                    }
-                }
-            }
-
         }
     }
 }
