@@ -198,7 +198,7 @@ namespace clientbackup
             if (this.tbConfirmMDP.Visible == true)
             {
                 config.AppSettings.Settings.Remove("password");
-                config.AppSettings.Settings.Add("password", this.tbMDP.Text);
+                config.AppSettings.Settings.Add("password",this.tbMDP.Text);
             }
             //si la zone de texte permettant de changer le mot de passe administrateur est visible
             //sauvegarde du mot de passe administrateur
@@ -217,7 +217,6 @@ namespace clientbackup
             DateTime lastSave = Serialization.deserializeLastSaveDate(true);
             //Sauvegarde le la date de la prochaine sauvegarde
             DateTime nextSaveDate = MainForm.initNextSave(/*lastSave*/DateTime.Now, conf.getPeriode(), conf.getHeure(), conf.getMinute());
-
             config.AppSettings.Settings.Remove("nextSave");
             config.AppSettings.Settings.Add("nextSave", nextSaveDate.ToString());
             ConfigurationManager.RefreshSection("appSettings");

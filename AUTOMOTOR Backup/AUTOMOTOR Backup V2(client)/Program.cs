@@ -18,20 +18,20 @@ namespace clientbackup
         [STAThread]
         static void Main()
         {
-            bool owned;
+            /*bool owned;
             Mutex m = new Mutex(true, Application.ProductName, out owned);
             if (owned)
-            {
+            {*/
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
                 MainForm mf = new MainForm();
                 Application.Run(mf);
-                m.ReleaseMutex();
-            }
+                //m.ReleaseMutex();
+            /*}
             else
             {
                 MessageBox.Show("L'application est déja lancée", Application.ProductName);
-            }
+            }*/
         }
     }
 }

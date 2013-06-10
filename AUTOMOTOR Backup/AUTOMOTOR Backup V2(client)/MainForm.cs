@@ -118,14 +118,13 @@ namespace clientbackup
         //lancement du redémarrage de l'ordinateur
         private void btnSave_Click(object sender, EventArgs e)
         {
-            this.initSaveViewer();
-            /*if (MessageBox.Show("La sauvegarde necessite le redemarrage de l'ordinateur, voulez-vous redémarrer maintenant?", " ", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            if (MessageBox.Show("La sauvegarde necessite le redemarrage de l'ordinateur, voulez-vous redémarrer maintenant?", " ", MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
                 RegistryModifier.enableAutoLogon(ConfigurationManager.AppSettings["password"]);
                 this.isAutoLogonEnabled = true;
                 Serialization.serialize(this.isAutoLogonEnabled);
                 Save.restartComputer();
-            }*/
+            }
             
         }
         #endregion
