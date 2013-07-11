@@ -3,6 +3,11 @@ using System.IO;
 using System.Collections;
 using System.Configuration;
 using System.Text;
+using System.Drawing;
+using System.Web;
+using System.ComponentModel;
+using System.Threading;
+
 using System.Windows.Forms;
 
 namespace clientbackup
@@ -12,29 +17,17 @@ namespace clientbackup
         private bool btnModifMDPClicked = false;
         private bool btnModifMDPAdminClicked = false;
         private ArrayList files;
+        private MainForm form;
         private string ancienInterval;
 
-        public ConfigForm()
+        public ConfigForm(MainForm f)
         {
             InitializeComponent();
-            /*if (this.c != null)
-            {
-                this.c = Serialization.deserializeConfig();
-                this.checkSelectedFiles(this.treeview.Nodes[0], filesList);
-                this.tbPeriod.Text = c.getNbJours().ToString();
-                this.tbHour.Text = c.getHeure().ToString();
-                this.tbMinutes.Text = c.getMinute().ToString();
-                this.tbPath.Text = c.getPath();
-                this.tbMDP.Text = c.getPassword().ToString();
-                this.numericUpDown1.Value = c.getNbSaves();
-            }*/
             this.files = Serialization.deserializeXML();
             ImageList imgList = new ImageList();
             this.treeview.ImageList = imgList;
-            imgList.Images.Add(System.Drawing.Image.FromFile(Environment.CurrentDirectory + @"/Data/dossier_windows.png"));
-            this.populatetreeView();
+            imgList.Images.Add(System.Drawing.Image.FromFile(Environment.CurrentDirectory + @"/images/dossier_windows.png"));
             
-
             this.NUDInterval.Value = Convert.ToDecimal(ConfigurationManager.AppSettings["period"]);
             this.tbHour.Text = ConfigurationManager.AppSettings["heure"];
             this.tbMinutes.Text = ConfigurationManager.AppSettings["minute"];
@@ -45,8 +38,9 @@ namespace clientbackup
             this.ancienInterval = this.NUDInterval.Value.ToString();
 
             this.toolTip1.ToolTipIcon = ToolTipIcon.Warning;
-            //this.toolTip1.ToolTipTitle = "Le repertoire de sauvegarde ne peut pas être sauvegarder";
-           
+            this.form = f;
+            this.populatetreeView();
+            //this.form.getWaitForm().Close();
         }
 
         private void btnBrowse_Click(object sender, EventArgs e)
@@ -113,7 +107,7 @@ namespace clientbackup
                         TreeNode childNode = new TreeNode(f.Name);
                         childNode.Checked = parentNode.Checked;
                         parentNode.Nodes.Add(childNode);
-                        
+                        childNode.ForeColor = Color.Gray;
                     }
                 }
             }
@@ -160,8 +154,9 @@ namespace clientbackup
 
         public bool isDirectory(string path)
         {
-            FileInfo f = new FileInfo(path);
-            return f.Attributes == FileAttributes.Directory;
+            //FileInfo f = new FileInfo(path);
+            //return f.Attributes == FileAttributes.Directory;
+            return Directory.Exists(path);
         } 
 
         public ArrayList recursiveNodeSearch(TreeNode parentNode, ArrayList list)
@@ -170,7 +165,10 @@ namespace clientbackup
             {
                 if (n.Checked)
                 {
-                    list.Add(n.FullPath);    
+                    if(!this.isDirectory(n.FullPath))
+                    {
+                        list.Add(n.FullPath);
+                    }
                 }
                 this.recursiveNodeSearch(n,list);
             }
@@ -213,15 +211,7 @@ namespace clientbackup
             config.AppSettings.Settings.Add("nbSaves", this.numericUpDown1.Value.ToString());
             ConfigurationManager.RefreshSection("appSettings");
             config.Save(ConfigurationSaveMode.Modified);
-            Configuration conf = new Configuration();
-            DateTime lastSave = Serialization.deserializeLastSaveDate(true);
-            //Sauvegarde le la date de la prochaine sauvegarde
-            DateTime nextSaveDate = MainForm.initNextSave(/*lastSave*/DateTime.Now, conf.getPeriode(), conf.getHeure(), conf.getMinute());
-            config.AppSettings.Settings.Remove("nextSave");
-            config.AppSettings.Settings.Add("nextSave", nextSaveDate.ToString());
-            ConfigurationManager.RefreshSection("appSettings");
-            //sauvegarde des modifications apportées au fichier de configuration
-            config.Save(ConfigurationSaveMode.Modified); 
+            Serialization.deserializeLastSaveDate(true);
         }
 
         #region verification de la validité des paramètres entrés par l'utilisateur
@@ -256,7 +246,7 @@ namespace clientbackup
         }
         #endregion
 
-        #region lorsque l'on cli que sur le bouton "annuler"
+        #region lorsque l'on clique sur le bouton "annuler"
         private void button1_Click(object sender, EventArgs e)
         {
             this.Close();
@@ -335,8 +325,6 @@ namespace clientbackup
         {
             this.toolTip1.SetToolTip(this.btnBrowse, "Veillez à ce que le repertoire de sauvegarde ne soit pas selectionné");
             this.toolTip1.ToolTipTitle = "Le repertoire de sauvegarde ne peut pas être sauvegarder";
-
-
         }
 
         public void actualiseSelectedNodes(TreeNode parent)
@@ -359,7 +347,35 @@ namespace clientbackup
 
         private void treeview_AfterCheck(object sender, TreeViewEventArgs e)
         {
-            //this.actualiseSelectedNodes(this.treeview.Nodes[0]);
+            this.actualiseNode(e.Node);
+            //this.checkParentnodes(e.Node);
+        }
+
+        //actualise l'état des noeuds enfant lorsqu'une node est cochée ou décochée
+        public void actualiseNode(TreeNode tn)
+        {
+            if (tn.Checked)
+            {
+                foreach (TreeNode child in tn.Nodes)
+                {
+                    child.Checked = true;
+                }
+            }
+            else
+            {
+                foreach (TreeNode child in tn.Nodes)
+                {
+                    child.Checked = false;
+                }
+            }
+        }
+    }
+
+    public class PersonalisableTreenode : TreeNode
+    {
+        public void griser()
+        {
+
         }
     }
 

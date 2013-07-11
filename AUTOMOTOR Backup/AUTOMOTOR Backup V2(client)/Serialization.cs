@@ -5,6 +5,7 @@ using System.IO;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
 using System.Configuration;
+using System.Windows.Forms;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Linq;
 using System.Text;
@@ -192,5 +193,7 @@ namespace clientbackup
                 return ' ';
             }
         }
-    }
+
+    
+    } 
 }

@@ -32,7 +32,6 @@ namespace clientbackup
 
         public Configuration(int nbj,int h, int min, int per, int nbSav, string p, string pwd)
         {
-             
             this.nbjours = nbj;
             this.heure = h;
             this.minute = min;
@@ -130,6 +129,6 @@ namespace clientbackup
             return this.nextSaveDate;
         }
 
-        
+     
     }
 }

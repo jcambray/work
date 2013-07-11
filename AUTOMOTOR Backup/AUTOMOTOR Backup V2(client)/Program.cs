@@ -11,7 +11,7 @@ namespace clientbackup
 {
     static class Program
     {
-        static Mutex m;
+        //static Mutex m;
         /// <summary>
         /// Point d'entrée principal de l'application.
         /// </summary>

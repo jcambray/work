@@ -22,6 +22,7 @@ namespace clientbackup
         private Save sauvegarde;
         private TimeSpan tempsRestant;
         private DateTime nextSave;
+        private WaitForm wf;
 
         public MainForm()
         {
@@ -38,21 +39,24 @@ namespace clientbackup
             //Chargement de la date de la derniere sauvegarde
             this.c = new Configuration();
             this.configureTimer();
-            this.nextSave = c.getNextSaveDate();
-
+            this.setLbEtatDerniereSauvegarde();
+            this.BWLoadingImage.WorkerSupportsCancellation = true;
             //Appel de la fonction permettant le bloquage d'arrets Windows
-            ShutdownBlockReasonCreate(this.Handle, "Une sauvegarde automatique va être éffectuée.");
+            //ShutdownBlockReasonCreate(this.Handle, "Une sauvegarde automatique va être éffectuée.");
 
             //chargement de la valeur booléenne indiquant si l'autoLogon est activé en base de registre
             //Si l'AutoLogon est activé en base de registre Windows
             //Désactivation de l'autoLogon en base de registre Windows
             // mise à jour et sauvegarde de la valeur booléenne
+            // suppression de la sauvegarde la plus ancienne si le nombre maxi de sauvegarde sera dépassé
+            //lancement de la sauvegarde
             this.isAutoLogonEnabled = (bool)Serialization.deserialize();
             if (this.isAutoLogonEnabled == true)
             {
                 RegistryModifier.disableAutoLogon();
                 this.isAutoLogonEnabled = false;
                 Serialization.serialize(this.isAutoLogonEnabled);
+                this.sauvegarde.checkSaveNumber();
                 this.initSaveViewer();
             }
          }
@@ -75,18 +79,22 @@ namespace clientbackup
         #region Ouverture du formulaire de configuration après vérification du MDP administrateur
         private void configuraionToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            MDPAdminControl MDPAC = new MDPAdminControl();
-            DialogResult result = MDPAC.ShowDialog();
-            if (result == System.Windows.Forms.DialogResult.OK)
+            string mdp = Serialization.deserializeMDPAdmin();
+            if (mdp == null)
             {
-                if (MDPAC.getOK())
+                MessageBox.Show("mot de passe administrateur introuvable.Veuillez en enregistrer un");
+                //this.loadConfigForm();
+                this.initConfig();
+                //this.BWLoadingImage.RunWorkerAsync();
+            }
+            else
+            {
+                MDPAdminControl MDPAC = new MDPAdminControl(mdp);
+                DialogResult result = MDPAC.ShowDialog();
+                if (result == System.Windows.Forms.DialogResult.OK)
                 {
-                    ConfigForm cf = new ConfigForm();
-                    cf.ShowDialog();
-                }
-                else
-                {
-                    MessageBox.Show("mot de passe incorrect");
+                    this.initConfig();
+                    //this.BWLoadingImage.RunWorkerAsync();
                 }
             }
         }
@@ -95,17 +103,20 @@ namespace clientbackup
         #region fermeture de l'application après vérification du MDP administrateur
         private void quitterToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            MDPAdminControl MDPAC = new MDPAdminControl();
-            DialogResult result = MDPAC.ShowDialog();
-            if (result == System.Windows.Forms.DialogResult.OK)
+            string mdp = Serialization.deserializeMDPAdmin();
+            if (mdp == null)
             {
-                if (MDPAC.getOK())
+                MessageBox.Show("mot de passe administrateur introuvable.Veuillez en enregistrer un");
+                this.loadConfigForm();
+                this.BWLoadingImage.RunWorkerAsync();
+            }
+            else
+            {
+                MDPAdminControl MDPAC = new MDPAdminControl(mdp);
+                DialogResult result = MDPAC.ShowDialog();
+                if (result == System.Windows.Forms.DialogResult.OK)
                 {
-                    this.Close();
-                }
-                else
-                {
-                    MessageBox.Show("mot de passe incorrect");
+                    Application.Exit();
                 }
             }
         }
@@ -120,10 +131,12 @@ namespace clientbackup
         {
             if (MessageBox.Show("La sauvegarde necessite le redemarrage de l'ordinateur, voulez-vous redémarrer maintenant?", " ", MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
+                /*this.sauvegarde.checkSaveNumber();
                 RegistryModifier.enableAutoLogon(ConfigurationManager.AppSettings["password"]);
                 this.isAutoLogonEnabled = true;
                 Serialization.serialize(this.isAutoLogonEnabled);
-                Save.restartComputer();
+                Save.restartComputer();*/
+                this.initSaveViewer();
             }
             
         }
@@ -147,32 +160,6 @@ namespace clientbackup
         //lancement du redémarrage de l'ordinateur
         private void myTimer_Tick(object sender, EventArgs e)
         {
-            this.sauvegarde.verifieSiTerminee();
-            DateTime dt = Serialization.deserializeLastSaveDate(false);
-            if (this.sauvegarde.verifieSiTerminee() == '2')
-            {
-                this.lbEtatSauvegarde.Text = " Terminée.";
-                this.lbEtatSauvegarde.ForeColor = Color.Green;
-            }
-            else
-                if (this.sauvegarde.verifieSiTerminee() == '1')
-                {
-                    this.lbEtatSauvegarde.Text = " En cours.";
-                    this.lbEtatSauvegarde.ForeColor = Color.Orange;
-                }
-                else
-                    if(this.sauvegarde.verifieSiTerminee() == '0')
-                        {
-                            this.lbEtatSauvegarde.Text = " Incomplète.";
-                            this.lbEtatSauvegarde.ForeColor = Color.Red;
-                        }
-                    else
-                        if (this.sauvegarde.verifieSiTerminee() == ' ')
-                        {
-                            this.lbEtatSauvegarde.Text = "N/A";
-                            this.lbEtatSauvegarde.ForeColor = Color.Red;
-                        }
-
             if (this.checkSaveConditions())
             {
                 this.myTimer.Stop();
@@ -198,14 +185,12 @@ namespace clientbackup
         {
             DateTime lastSave = Serialization.deserializeLastSaveDate(false);
             bool check = false;
-            this.c = new Configuration();
-            int heure = Convert.ToInt32(c.getHeure());
-            int minute = Convert.ToInt32(c.getMinute());
-            int period = Convert.ToInt32(c.getPeriode());
+            int heure = Convert.ToInt32(this.c.getHeure());
+            int minute = Convert.ToInt32(this.c.getMinute());
+            int period = Convert.ToInt32(this.c.getPeriode());
             try
             {
-                //initNextSave(lastSave, period, heure, minute);
-                //this.nextSave = c.getNextSaveDate();
+                this.nextSave = initNextSave(lastSave, period, heure, minute);
                 this.tempsRestant = this.nextSave - DateTime.Now;
                 TimeSpan tempsEcoule = DateTime.Now - lastSave;
                 if (Serialization.deserializeLastSaveDate(false).Year == 2000)
@@ -223,10 +208,7 @@ namespace clientbackup
                     ShutdownBlockReasonCreate(this.Handle, "Une sauvegarde automatique va être éffectuée à " + c.getHeure() + " h " + c.getMinute() + "." + Environment.NewLine + " Veuillez ne pas éteindre l'ordinateur");
                 }
                 this.afficheAlerte();
-                if (this.verifieSiTempsEstEcoule(tempsRestant))
-                {
-                    check = true;
-                }
+                check = this.verifieSiTempsEstEcoule(tempsRestant);     
             }
             catch{ }
             return check;
@@ -234,7 +216,7 @@ namespace clientbackup
 
         public void initConfig()
         {
-            ConfigForm cf = new ConfigForm();
+            ConfigForm cf = new ConfigForm(this);
             cf.Show();
         }
 
@@ -256,7 +238,7 @@ namespace clientbackup
         public void maximize()
         {
             this.Visible = true;
-            this.ShowInTaskbar = true;
+            this.ShowInTaskbar = false;
             this.WindowState = FormWindowState.Normal;
         }
 
@@ -269,7 +251,6 @@ namespace clientbackup
         {
             if (Serialization.deserializeLastSaveDate(false).Year == 2000)
             {
-
                 this.lbCompteARebours.Text = "non planifiée";
             }
             else
@@ -296,10 +277,6 @@ namespace clientbackup
             {
                 ok = true;
             }
-            /*if (t.Days >= nbJour && DateTime.Now.Hour == nbHeure && DateTime.Now.Minute == nbMinute)
-            {
-                ok = true;
-            }*/
             return ok;
         }
 
@@ -310,7 +287,7 @@ namespace clientbackup
             int heure = Convert.ToInt32(c.getHeure());
             int minute = Convert.ToInt32(c.getMinute());
             int period = Convert.ToInt32(c.getPeriode());
-            DateTime nextSave = initNextSave(lastSave, period, heure, minute);
+            DateTime nextSave = c.getNextSaveDate(); 
             TimeSpan tempsRestant = nextSave - DateTime.Now;
 
             if (this.tempsRestant.Days == 0 && this.tempsRestant.Hours < 5 && DateTime.Now.Second == 0 && (DateTime.Now.Minute == 0 || DateTime.Now.Minute == 30))
@@ -322,7 +299,6 @@ namespace clientbackup
             {
                 this.notifyIcon.BalloonTipIcon = System.Windows.Forms.ToolTipIcon.Info;
             }
-
         }
 
         public void initSaveViewer()
@@ -331,7 +307,7 @@ namespace clientbackup
             sv.Show();
         }
 
-        public bool isOpen(Form frm)
+       /* public bool isOpen(Form frm)
         {
             bool b = false;
             foreach (Form f in Application.OpenForms)
@@ -342,7 +318,7 @@ namespace clientbackup
                 }
             }
             return b;
-        }
+        } */
 
         public void notifyIcconAlerte(int heure, int minute, string message, int duree)
         {
@@ -391,6 +367,68 @@ namespace clientbackup
         private void consulterToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Log.open();
+        }
+
+        private void btnCible_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start(this.c.getPath() + @"\" + Environment.UserName);
+        }
+
+        public void loadConfigForm()
+        {
+            ConfigForm cf = new ConfigForm(this);
+            cf.Show();
+        }
+
+        public BackgroundWorker getBackgroundWorker()
+        {
+            return this.BWLoadingImage;
+        }
+
+        public Form getWaitForm()
+        {
+            return this.wf;
+        }
+
+        private void BWLoadingImage_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            this.wf.Close();
+        }
+
+        private void BWLoadingImage_DoWork(object sender, DoWorkEventArgs e)
+        {
+            this.wf = new WaitForm();
+            this.wf.Show();
+            this.loadConfigForm();
+        }
+
+        public void setLbEtatDerniereSauvegarde()
+        {
+            this.sauvegarde.verifieSiTerminee();
+            //DateTime dt = Serialization.deserializeLastSaveDate(false);
+            if (this.sauvegarde.verifieSiTerminee() == '2')
+            {
+                this.lbEtatSauvegarde.Text = " Terminée.";
+                this.lbEtatSauvegarde.ForeColor = Color.Green;
+            }
+            else
+                if (this.sauvegarde.verifieSiTerminee() == '1')
+                {
+                    this.lbEtatSauvegarde.Text = " En cours.";
+                    this.lbEtatSauvegarde.ForeColor = Color.Orange;
+                }
+                else
+                    if (this.sauvegarde.verifieSiTerminee() == '0')
+                    {
+                        this.lbEtatSauvegarde.Text = "introuvable ou incomplète";
+                        this.lbEtatSauvegarde.ForeColor = Color.Red;
+                    }
+                    else
+                        if (this.sauvegarde.verifieSiTerminee() == ' ')
+                        {
+                            this.lbEtatSauvegarde.Text = "N/A";
+                            this.lbEtatSauvegarde.ForeColor = Color.Red;
+                        }
         }
     }
 }

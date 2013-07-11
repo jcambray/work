@@ -14,22 +14,31 @@ namespace clientbackup
         private string mdp;
         private bool ok = false;
 
-        public MDPAdminControl()
+        public MDPAdminControl(string password)
         {
             InitializeComponent();
-           this.mdp = Serialization.deserializeMDPAdmin();
-           if (this.mdp == null)
-           {
-               MessageBox.Show("mot de passe administrateur introuvable.Veuillez en enregistrer un");
-               ConfigForm cf = new ConfigForm();
-               cf.Show();
-           }
+            this.mdp = password;
         }
 
         private void btnOK_Click(object sender, EventArgs e)
         {
             this.checkMDP();
-            DialogResult = System.Windows.Forms.DialogResult.OK;
+            if (this.ok)
+            {
+                DialogResult = System.Windows.Forms.DialogResult.OK;
+                this.Close();
+            }
+            else
+                if (!this.ok)
+                {
+                    MessageBox.Show("Mot de passe incorrect");
+                    this.Close();
+                }
+                else
+                {
+                    DialogResult = System.Windows.Forms.DialogResult.Cancel;
+                    this.Close();
+                }
         }
 
         public bool getOK()

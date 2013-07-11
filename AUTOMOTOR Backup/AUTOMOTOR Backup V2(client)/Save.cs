@@ -18,10 +18,12 @@ namespace clientbackup
         private string fichierCopie;
         private int nbfichierscopie = 0;
         private BackgroundWorker bgwk = null;
+        private Configuration c;
 
         public Save()
         {
             //this.nbFichiersACopier = this.calculNbFichierACopier();
+            this.c = new Configuration();
         }
 
         public void execute(BackgroundWorker bgw)
@@ -270,6 +272,34 @@ namespace clientbackup
         public void setBgwk(BackgroundWorker bg)
         {
             this.bgwk = bg;
+        }
+
+        public  void checkSaveNumber()
+        {
+            string[] directories = Directory.GetDirectories(this.c.getPath() + @"/" + Environment.UserName);
+            int nbSaves = Directory.GetDirectories(this.c.getPath() + @"/" + Environment.UserName).Length;
+            while(nbSaves >= this.c.getNbSaves())
+            {
+                DateTime dt = Directory.GetCreationTime(directories[0]);
+                for (int i = 0; i < directories.Length; i++)
+                {
+                    DateTime dateCreation = Directory.GetCreationTime(directories[i]);
+                    if (dt.CompareTo(dateCreation) > 0)
+                    {
+                        dt = dateCreation;
+                    }
+                }
+                foreach (string s in directories)
+                {
+                    if (dt == Directory.GetCreationTime(s))
+                    {
+                        Directory.Delete(s, true);
+                    }
+                }
+                nbSaves = Directory.GetDirectories(this.c.getPath() + @"/" + Environment.UserName).Length;
+                directories = Directory.GetDirectories(this.c.getPath() + @"/" + Environment.UserName);
+            }
+
         }
     }
 

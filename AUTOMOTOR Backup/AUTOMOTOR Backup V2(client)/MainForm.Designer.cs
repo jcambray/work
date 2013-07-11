@@ -49,8 +49,14 @@
             this.lbDateProchaineSauvegarde1 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.lbEtatSauvegarde = new System.Windows.Forms.Label();
+            this.btnCible = new System.Windows.Forms.Button();
+            this.pictureBox2 = new System.Windows.Forms.PictureBox();
+            this.pictureBox3 = new System.Windows.Forms.PictureBox();
+            this.BWLoadingImage = new System.ComponentModel.BackgroundWorker();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -99,14 +105,14 @@
             // consulterToolStripMenuItem
             // 
             this.consulterToolStripMenuItem.Name = "consulterToolStripMenuItem";
-            this.consulterToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.consulterToolStripMenuItem.Size = new System.Drawing.Size(125, 22);
             this.consulterToolStripMenuItem.Text = "Consulter";
             this.consulterToolStripMenuItem.Click += new System.EventHandler(this.consulterToolStripMenuItem_Click);
             // 
             // effacerToolStripMenuItem
             // 
             this.effacerToolStripMenuItem.Name = "effacerToolStripMenuItem";
-            this.effacerToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.effacerToolStripMenuItem.Size = new System.Drawing.Size(125, 22);
             this.effacerToolStripMenuItem.Text = "Effacer";
             this.effacerToolStripMenuItem.Click += new System.EventHandler(this.effacerToolStripMenuItem_Click);
             // 
@@ -139,7 +145,7 @@
             // 
             this.lbUtilisateur.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.lbUtilisateur.AutoSize = true;
-            this.lbUtilisateur.Location = new System.Drawing.Point(9, 122);
+            this.lbUtilisateur.Location = new System.Drawing.Point(9, 145);
             this.lbUtilisateur.Name = "lbUtilisateur";
             this.lbUtilisateur.Size = new System.Drawing.Size(56, 13);
             this.lbUtilisateur.TabIndex = 4;
@@ -149,7 +155,7 @@
             // 
             this.lbUtilisateur1.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.lbUtilisateur1.AutoSize = true;
-            this.lbUtilisateur1.Location = new System.Drawing.Point(192, 122);
+            this.lbUtilisateur1.Location = new System.Drawing.Point(192, 145);
             this.lbUtilisateur1.Name = "lbUtilisateur1";
             this.lbUtilisateur1.Size = new System.Drawing.Size(35, 13);
             this.lbUtilisateur1.TabIndex = 6;
@@ -159,7 +165,7 @@
             // 
             this.lbProchaineSauvegarde1.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.lbProchaineSauvegarde1.AutoSize = true;
-            this.lbProchaineSauvegarde1.Location = new System.Drawing.Point(9, 172);
+            this.lbProchaineSauvegarde1.Location = new System.Drawing.Point(12, 90);
             this.lbProchaineSauvegarde1.Name = "lbProchaineSauvegarde1";
             this.lbProchaineSauvegarde1.Size = new System.Drawing.Size(143, 13);
             this.lbProchaineSauvegarde1.TabIndex = 5;
@@ -169,7 +175,7 @@
             // 
             this.lbCompteARebours.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.lbCompteARebours.AutoSize = true;
-            this.lbCompteARebours.Location = new System.Drawing.Point(192, 172);
+            this.lbCompteARebours.Location = new System.Drawing.Point(192, 90);
             this.lbCompteARebours.Name = "lbCompteARebours";
             this.lbCompteARebours.Size = new System.Drawing.Size(35, 13);
             this.lbCompteARebours.TabIndex = 7;
@@ -188,7 +194,7 @@
             // lbDateProchaineSauvegarde
             // 
             this.lbDateProchaineSauvegarde.AutoSize = true;
-            this.lbDateProchaineSauvegarde.Location = new System.Drawing.Point(9, 209);
+            this.lbDateProchaineSauvegarde.Location = new System.Drawing.Point(9, 212);
             this.lbDateProchaineSauvegarde.Name = "lbDateProchaineSauvegarde";
             this.lbDateProchaineSauvegarde.Size = new System.Drawing.Size(168, 13);
             this.lbDateProchaineSauvegarde.TabIndex = 11;
@@ -197,7 +203,7 @@
             // lbDateProchaineSauvegarde1
             // 
             this.lbDateProchaineSauvegarde1.AutoSize = true;
-            this.lbDateProchaineSauvegarde1.Location = new System.Drawing.Point(192, 209);
+            this.lbDateProchaineSauvegarde1.Location = new System.Drawing.Point(192, 212);
             this.lbDateProchaineSauvegarde1.Name = "lbDateProchaineSauvegarde1";
             this.lbDateProchaineSauvegarde1.Size = new System.Drawing.Size(35, 13);
             this.lbDateProchaineSauvegarde1.TabIndex = 12;
@@ -206,7 +212,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(9, 253);
+            this.label1.Location = new System.Drawing.Point(9, 281);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(155, 13);
             this.label1.TabIndex = 13;
@@ -215,11 +221,48 @@
             // lbEtatSauvegarde
             // 
             this.lbEtatSauvegarde.AutoSize = true;
-            this.lbEtatSauvegarde.Location = new System.Drawing.Point(192, 253);
+            this.lbEtatSauvegarde.Location = new System.Drawing.Point(192, 281);
             this.lbEtatSauvegarde.Name = "lbEtatSauvegarde";
             this.lbEtatSauvegarde.Size = new System.Drawing.Size(35, 13);
             this.lbEtatSauvegarde.TabIndex = 14;
             this.lbEtatSauvegarde.Text = "label2";
+            // 
+            // btnCible
+            // 
+            this.btnCible.Location = new System.Drawing.Point(54, 360);
+            this.btnCible.Name = "btnCible";
+            this.btnCible.Size = new System.Drawing.Size(215, 33);
+            this.btnCible.TabIndex = 17;
+            this.btnCible.Text = "Ouvrir le répertoire de sauvegarde";
+            this.btnCible.UseVisualStyleBackColor = true;
+            this.btnCible.Click += new System.EventHandler(this.btnCible_Click);
+            // 
+            // pictureBox2
+            // 
+            this.pictureBox2.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox2.Image")));
+            this.pictureBox2.Location = new System.Drawing.Point(0, 27);
+            this.pictureBox2.Name = "pictureBox2";
+            this.pictureBox2.Size = new System.Drawing.Size(78, 60);
+            this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+            this.pictureBox2.TabIndex = 18;
+            this.pictureBox2.TabStop = false;
+            // 
+            // pictureBox3
+            // 
+            this.pictureBox3.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox3.Image")));
+            this.pictureBox3.Location = new System.Drawing.Point(244, 27);
+            this.pictureBox3.Name = "pictureBox3";
+            this.pictureBox3.Size = new System.Drawing.Size(78, 60);
+            this.pictureBox3.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+            this.pictureBox3.TabIndex = 19;
+            this.pictureBox3.TabStop = false;
+            // 
+            // BWLoadingImage
+            // 
+            this.BWLoadingImage.WorkerReportsProgress = true;
+            this.BWLoadingImage.WorkerSupportsCancellation = true;
+            this.BWLoadingImage.DoWork += new System.ComponentModel.DoWorkEventHandler(this.BWLoadingImage_DoWork);
+            this.BWLoadingImage.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.BWLoadingImage_RunWorkerCompleted);
             // 
             // MainForm
             // 
@@ -228,6 +271,8 @@
             this.AutoSize = true;
             this.ClientSize = new System.Drawing.Size(323, 484);
             this.ControlBox = false;
+            this.Controls.Add(this.pictureBox3);
+            this.Controls.Add(this.btnCible);
             this.Controls.Add(this.lbEtatSauvegarde);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.lbDateProchaineSauvegarde1);
@@ -236,9 +281,10 @@
             this.Controls.Add(this.lbCompteARebours);
             this.Controls.Add(this.lbProchaineSauvegarde1);
             this.Controls.Add(this.lbUtilisateur1);
-            this.Controls.Add(this.btnSave);
             this.Controls.Add(this.lbUtilisateur);
             this.Controls.Add(this.menuStrip1);
+            this.Controls.Add(this.pictureBox2);
+            this.Controls.Add(this.btnSave);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
@@ -249,6 +295,8 @@
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -275,6 +323,10 @@
         private System.Windows.Forms.Label lbEtatSauvegarde;
         private System.Windows.Forms.ToolStripMenuItem consulterToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem effacerToolStripMenuItem;
+        private System.Windows.Forms.Button btnCible;
+        private System.Windows.Forms.PictureBox pictureBox2;
+        private System.Windows.Forms.PictureBox pictureBox3;
+        private System.ComponentModel.BackgroundWorker BWLoadingImage;
     }
 }
 
