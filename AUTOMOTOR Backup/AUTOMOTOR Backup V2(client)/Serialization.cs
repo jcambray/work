@@ -58,19 +58,19 @@ namespace clientbackup
             return list;
         }
 
-        public static void serializeToXML(ArrayList list)
+        public static void serializeToXML(ArrayList list, string filename)
         {
             XmlSerializer serializer = new XmlSerializer(typeof(ArrayList));
-            FileStream fichier = new FileStream(Environment.CurrentDirectory + @"/Data/listXML.xml", FileMode.Create);
+            FileStream fichier = new FileStream(Environment.CurrentDirectory + @"/Data/" + filename, FileMode.Create);
             serializer.Serialize(fichier, list);
             fichier.Close();
         }
 
-        public static ArrayList deserializeXML()
+        public static ArrayList deserializeXML(string filename)
         {
             try
             {
-                FileStream fichier = new FileStream(Environment.CurrentDirectory + @"/Data/listXML.xml", FileMode.OpenOrCreate);
+                FileStream fichier = new FileStream(Environment.CurrentDirectory + @"/Data/" + filename, FileMode.OpenOrCreate);
                 XmlSerializer serializer = new XmlSerializer(typeof(ArrayList));
                 ArrayList list = (ArrayList)serializer.Deserialize(fichier);
                 fichier.Close();

@@ -6,6 +6,7 @@ using System.Collections;
 using System.Text;
 using System.ComponentModel;
 using System.Threading;
+using System.Security.AccessControl;
 using System.Configuration;
 
 
@@ -34,7 +35,7 @@ namespace clientbackup
             }
             catch { }
             Serialization.serializeLastSaveDate(DateTime.Now);
-            ArrayList pathesList = (ArrayList)Serialization.deserializeXML();
+            ArrayList pathesList = (ArrayList)Serialization.deserializeXML("folders.xml");
             string path = this.getSaveRoot() + @".tmp";
             //création du dossier de sauvegarde de l'utilisateur
             try
@@ -68,7 +69,7 @@ namespace clientbackup
                             Directory.CreateDirectory(savedDirPath);
                         }
                         this.copyFiles(s, this.bgwk);
-                        this.copySubDirectories(s, this.bgwk);
+                        //this.copySubDirectories(s, this.bgwk);
 
                     }
                     else
@@ -84,11 +85,13 @@ namespace clientbackup
           
                 try
                 {
-                   
                         Log.notifieFinSauvegarde("-" + DateTime.Now.Day.ToString() + "." + DateTime.Now.Month.ToString() + "." + DateTime.Now.Year.ToString() + " à " + DateTime.Now.Hour + "h" + DateTime.Now.Minute + ".");
                         Directory.Move(this.getSaveRoot() + @".tmp", this.getSaveRoot());
                 }
-                catch { }
+                catch(Exception e)
+                {
+                    Log.write(e.Message);
+                }
         }
 
         public static void restartComputer()
@@ -121,6 +124,7 @@ namespace clientbackup
         {
             try
             {
+                ArrayList excludedFiles = (ArrayList)Serialization.deserializeXML("files.xml");
                 string[] files = Directory.GetFiles(@"C:\" + s);
                 foreach (string filePath in files)
                 {
@@ -132,9 +136,20 @@ namespace clientbackup
                     {
                         if (!this.estUnRaccourci(filePath))
                         {
-                            File.Copy(filePath, this.getSaveRoot() + @".tmp\" + this.toSavedFilePathFormat(s) + @"\" + fileName);
-                            this.nbfichierscopie++;
-                            bgw.ReportProgress(nbfichierscopie);
+                            bool ok = true;
+                            foreach (string str in excludedFiles)
+                            {
+                                if (str == fileName)
+                                {
+                                    ok = false;
+                                }
+                            }
+                            if (ok)
+                            {
+                                File.Copy(filePath, this.getSaveRoot() + @".tmp\" + this.toSavedFilePathFormat(s) + @"\" + fileName,true);
+                                this.nbfichierscopie++;
+                                bgw.ReportProgress(nbfichierscopie);
+                            }
                         }
                     }
                 }
@@ -191,7 +206,9 @@ namespace clientbackup
         {
             char ok = '0';
             DateTime dt = Serialization.deserializeLastSaveDate(false);
-
+            //si le fichier de sauvegarde final éxiste et le backgroundWorker est inactif
+            //sinon si le fichier de sauvegarde temporaire éxiste et que le backgroundworker est inactif
+            //sinon si le fichier de sauvegarde temporaire éxiste et que le backgroundworker est actif
             if (Directory.Exists(ConfigurationManager.AppSettings["path"] + @"\" + Environment.UserName + @"\" + dt.Day + "." + dt.Month + "." + dt.Year) && this.bgwk == null)
             {
                 ok = '2';
@@ -235,7 +252,7 @@ namespace clientbackup
 
         public int calculNbFichierACopier()
         {
-            ArrayList listRepertoires = Serialization.deserializeXML();
+            ArrayList listRepertoires = Serialization.deserializeXML("folders.xml");
             int nbfichiers = 0;
             foreach (string rep in listRepertoires)
             {
@@ -274,7 +291,7 @@ namespace clientbackup
             this.bgwk = bg;
         }
 
-        public  void checkSaveNumber()
+        public void checkSaveNumber()
         {
             string[] directories = Directory.GetDirectories(this.c.getPath() + @"/" + Environment.UserName);
             int nbSaves = Directory.GetDirectories(this.c.getPath() + @"/" + Environment.UserName).Length;
@@ -293,7 +310,15 @@ namespace clientbackup
                 {
                     if (dt == Directory.GetCreationTime(s))
                     {
-                        Directory.Delete(s, true);
+                        DirectoryInfo dir = new DirectoryInfo(s);
+                        foreach (DirectoryInfo info in dir.GetFileSystemInfos())
+                        {
+                            if ((info.Attributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
+                            {
+                                info.Attributes = FileAttributes.Normal;
+                            }
+                        }
+                         Directory.Delete(s, true);
                     }
                 }
                 nbSaves = Directory.GetDirectories(this.c.getPath() + @"/" + Environment.UserName).Length;

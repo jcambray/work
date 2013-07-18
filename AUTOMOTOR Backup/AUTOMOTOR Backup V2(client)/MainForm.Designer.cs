@@ -40,23 +40,15 @@
             this.btnSave = new System.Windows.Forms.Button();
             this.myTimer = new System.Windows.Forms.Timer(this.components);
             this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
-            this.lbUtilisateur = new System.Windows.Forms.Label();
             this.lbUtilisateur1 = new System.Windows.Forms.Label();
             this.lbProchaineSauvegarde1 = new System.Windows.Forms.Label();
             this.lbCompteARebours = new System.Windows.Forms.Label();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.lbDateProchaineSauvegarde = new System.Windows.Forms.Label();
             this.lbDateProchaineSauvegarde1 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.lbEtatSauvegarde = new System.Windows.Forms.Label();
             this.btnCible = new System.Windows.Forms.Button();
-            this.pictureBox2 = new System.Windows.Forms.PictureBox();
-            this.pictureBox3 = new System.Windows.Forms.PictureBox();
-            this.BWLoadingImage = new System.ComponentModel.BackgroundWorker();
             this.menuStrip1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -141,23 +133,16 @@
             this.notifyIcon.Visible = true;
             this.notifyIcon.Click += new System.EventHandler(this.notifyIcon_Click);
             // 
-            // lbUtilisateur
-            // 
-            this.lbUtilisateur.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.lbUtilisateur.AutoSize = true;
-            this.lbUtilisateur.Location = new System.Drawing.Point(9, 145);
-            this.lbUtilisateur.Name = "lbUtilisateur";
-            this.lbUtilisateur.Size = new System.Drawing.Size(56, 13);
-            this.lbUtilisateur.TabIndex = 4;
-            this.lbUtilisateur.Text = "Utilisateur:";
-            // 
             // lbUtilisateur1
             // 
             this.lbUtilisateur1.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.lbUtilisateur1.AutoSize = true;
-            this.lbUtilisateur1.Location = new System.Drawing.Point(192, 145);
+            this.lbUtilisateur1.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbUtilisateur1.ForeColor = System.Drawing.Color.White;
+            this.lbUtilisateur1.Image = ((System.Drawing.Image)(resources.GetObject("lbUtilisateur1.Image")));
+            this.lbUtilisateur1.Location = new System.Drawing.Point(128, 145);
             this.lbUtilisateur1.Name = "lbUtilisateur1";
-            this.lbUtilisateur1.Size = new System.Drawing.Size(35, 13);
+            this.lbUtilisateur1.Size = new System.Drawing.Size(66, 24);
             this.lbUtilisateur1.TabIndex = 6;
             this.lbUtilisateur1.Text = "label1";
             // 
@@ -181,19 +166,10 @@
             this.lbCompteARebours.TabIndex = 7;
             this.lbCompteARebours.Text = "label1";
             // 
-            // pictureBox1
-            // 
-            this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
-            this.pictureBox1.Location = new System.Drawing.Point(84, 27);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(154, 60);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pictureBox1.TabIndex = 10;
-            this.pictureBox1.TabStop = false;
-            // 
             // lbDateProchaineSauvegarde
             // 
             this.lbDateProchaineSauvegarde.AutoSize = true;
+            this.lbDateProchaineSauvegarde.Image = ((System.Drawing.Image)(resources.GetObject("lbDateProchaineSauvegarde.Image")));
             this.lbDateProchaineSauvegarde.Location = new System.Drawing.Point(9, 212);
             this.lbDateProchaineSauvegarde.Name = "lbDateProchaineSauvegarde";
             this.lbDateProchaineSauvegarde.Size = new System.Drawing.Size(168, 13);
@@ -203,7 +179,8 @@
             // lbDateProchaineSauvegarde1
             // 
             this.lbDateProchaineSauvegarde1.AutoSize = true;
-            this.lbDateProchaineSauvegarde1.Location = new System.Drawing.Point(192, 212);
+            this.lbDateProchaineSauvegarde1.Image = ((System.Drawing.Image)(resources.GetObject("lbDateProchaineSauvegarde1.Image")));
+            this.lbDateProchaineSauvegarde1.Location = new System.Drawing.Point(179, 213);
             this.lbDateProchaineSauvegarde1.Name = "lbDateProchaineSauvegarde1";
             this.lbDateProchaineSauvegarde1.Size = new System.Drawing.Size(35, 13);
             this.lbDateProchaineSauvegarde1.TabIndex = 12;
@@ -212,6 +189,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
+            this.label1.Image = ((System.Drawing.Image)(resources.GetObject("label1.Image")));
             this.label1.Location = new System.Drawing.Point(9, 281);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(155, 13);
@@ -221,7 +199,8 @@
             // lbEtatSauvegarde
             // 
             this.lbEtatSauvegarde.AutoSize = true;
-            this.lbEtatSauvegarde.Location = new System.Drawing.Point(192, 281);
+            this.lbEtatSauvegarde.Image = ((System.Drawing.Image)(resources.GetObject("lbEtatSauvegarde.Image")));
+            this.lbEtatSauvegarde.Location = new System.Drawing.Point(179, 282);
             this.lbEtatSauvegarde.Name = "lbEtatSauvegarde";
             this.lbEtatSauvegarde.Size = new System.Drawing.Size(35, 13);
             this.lbEtatSauvegarde.TabIndex = 14;
@@ -237,54 +216,26 @@
             this.btnCible.UseVisualStyleBackColor = true;
             this.btnCible.Click += new System.EventHandler(this.btnCible_Click);
             // 
-            // pictureBox2
-            // 
-            this.pictureBox2.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox2.Image")));
-            this.pictureBox2.Location = new System.Drawing.Point(0, 27);
-            this.pictureBox2.Name = "pictureBox2";
-            this.pictureBox2.Size = new System.Drawing.Size(78, 60);
-            this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
-            this.pictureBox2.TabIndex = 18;
-            this.pictureBox2.TabStop = false;
-            // 
-            // pictureBox3
-            // 
-            this.pictureBox3.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox3.Image")));
-            this.pictureBox3.Location = new System.Drawing.Point(244, 27);
-            this.pictureBox3.Name = "pictureBox3";
-            this.pictureBox3.Size = new System.Drawing.Size(78, 60);
-            this.pictureBox3.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
-            this.pictureBox3.TabIndex = 19;
-            this.pictureBox3.TabStop = false;
-            // 
-            // BWLoadingImage
-            // 
-            this.BWLoadingImage.WorkerReportsProgress = true;
-            this.BWLoadingImage.WorkerSupportsCancellation = true;
-            this.BWLoadingImage.DoWork += new System.ComponentModel.DoWorkEventHandler(this.BWLoadingImage_DoWork);
-            this.BWLoadingImage.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.BWLoadingImage_RunWorkerCompleted);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
+            this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
+            this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(323, 484);
             this.ControlBox = false;
-            this.Controls.Add(this.pictureBox3);
             this.Controls.Add(this.btnCible);
             this.Controls.Add(this.lbEtatSauvegarde);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.lbDateProchaineSauvegarde1);
             this.Controls.Add(this.lbDateProchaineSauvegarde);
-            this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.lbCompteARebours);
             this.Controls.Add(this.lbProchaineSauvegarde1);
             this.Controls.Add(this.lbUtilisateur1);
-            this.Controls.Add(this.lbUtilisateur);
             this.Controls.Add(this.menuStrip1);
-            this.Controls.Add(this.pictureBox2);
             this.Controls.Add(this.btnSave);
+            this.DoubleBuffered = true;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
@@ -294,9 +245,6 @@
             this.Text = " ";
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -312,11 +260,9 @@
         private System.Windows.Forms.NotifyIcon notifyIcon;
         private System.Windows.Forms.ToolStripMenuItem réduireToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem logToolStripMenuItem;
-        private System.Windows.Forms.Label lbUtilisateur;
         private System.Windows.Forms.Label lbUtilisateur1;
         private System.Windows.Forms.Label lbProchaineSauvegarde1;
         private System.Windows.Forms.Label lbCompteARebours;
-        private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Label lbDateProchaineSauvegarde;
         private System.Windows.Forms.Label lbDateProchaineSauvegarde1;
         private System.Windows.Forms.Label label1;
@@ -324,9 +270,6 @@
         private System.Windows.Forms.ToolStripMenuItem consulterToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem effacerToolStripMenuItem;
         private System.Windows.Forms.Button btnCible;
-        private System.Windows.Forms.PictureBox pictureBox2;
-        private System.Windows.Forms.PictureBox pictureBox3;
-        private System.ComponentModel.BackgroundWorker BWLoadingImage;
     }
 }
 

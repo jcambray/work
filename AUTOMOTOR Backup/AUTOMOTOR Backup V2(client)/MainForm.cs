@@ -1,13 +1,6 @@
 ﻿using System;
-using System.IO;
-using System.Collections.Generic;
-using System.Collections;
-using System.ComponentModel;
 using System.Configuration;
-using System.Data;
 using System.Drawing;
-using System.Text;
-using System.Windows;
 using System.Threading;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
@@ -22,7 +15,8 @@ namespace clientbackup
         private Save sauvegarde;
         private TimeSpan tempsRestant;
         private DateTime nextSave;
-        private WaitForm wf;
+        public Thread configFormThread;
+        private int i = 0;
 
         public MainForm()
         {
@@ -38,9 +32,19 @@ namespace clientbackup
             //Configuration du Timer
             //Chargement de la date de la derniere sauvegarde
             this.c = new Configuration();
+            DateTime lastSave = Serialization.deserializeLastSaveDate(false);
+            this.nextSave = initNextSave(lastSave, this.c.getPeriode(), this.c.getHeure(), this.c.getMinute());
+            if (Serialization.deserializeLastSaveDate(false).Year == 2000)
+            {
+                this.lbDateProchaineSauvegarde1.ForeColor = Color.Red;
+                this.lbDateProchaineSauvegarde1.Text = "non planifiée";
+            }
+            else
+            {
+                this.lbDateProchaineSauvegarde1.Text = this.nextSave.ToShortDateString() + " à " + c.getHeure() + "h" + c.getMinute();
+            }
             this.configureTimer();
             this.setLbEtatDerniereSauvegarde();
-            this.BWLoadingImage.WorkerSupportsCancellation = true;
             //Appel de la fonction permettant le bloquage d'arrets Windows
             //ShutdownBlockReasonCreate(this.Handle, "Une sauvegarde automatique va être éffectuée.");
 
@@ -53,13 +57,13 @@ namespace clientbackup
             this.isAutoLogonEnabled = (bool)Serialization.deserialize();
             if (this.isAutoLogonEnabled == true)
             {
+                Thread.Sleep(60000);
                 RegistryModifier.disableAutoLogon();
                 this.isAutoLogonEnabled = false;
                 Serialization.serialize(this.isAutoLogonEnabled);
-                this.sauvegarde.checkSaveNumber();
                 this.initSaveViewer();
             }
-         }
+        }
 
 
         [DllImport("user32.dll")]
@@ -83,9 +87,9 @@ namespace clientbackup
             if (mdp == null)
             {
                 MessageBox.Show("mot de passe administrateur introuvable.Veuillez en enregistrer un");
-                //this.loadConfigForm();
+                this.configFormThread = new Thread(new ThreadStart(this.initWaitForm));
+                this.configFormThread.Start();
                 this.initConfig();
-                //this.BWLoadingImage.RunWorkerAsync();
             }
             else
             {
@@ -93,8 +97,9 @@ namespace clientbackup
                 DialogResult result = MDPAC.ShowDialog();
                 if (result == System.Windows.Forms.DialogResult.OK)
                 {
+                    this.configFormThread = new Thread(new ThreadStart(this.initWaitForm));
+                    this.configFormThread.Start();
                     this.initConfig();
-                    //this.BWLoadingImage.RunWorkerAsync();
                 }
             }
         }
@@ -107,8 +112,9 @@ namespace clientbackup
             if (mdp == null)
             {
                 MessageBox.Show("mot de passe administrateur introuvable.Veuillez en enregistrer un");
-                this.loadConfigForm();
-                this.BWLoadingImage.RunWorkerAsync();
+                this.configFormThread = new Thread(new ThreadStart(this.initWaitForm));
+                this.configFormThread.Start();
+                this.initConfig();
             }
             else
             {
@@ -131,14 +137,13 @@ namespace clientbackup
         {
             if (MessageBox.Show("La sauvegarde necessite le redemarrage de l'ordinateur, voulez-vous redémarrer maintenant?", " ", MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
-                /*this.sauvegarde.checkSaveNumber();
-                RegistryModifier.enableAutoLogon(ConfigurationManager.AppSettings["password"]);
+                /*RegistryModifier.enableAutoLogon(ConfigurationManager.AppSettings["password"]);
                 this.isAutoLogonEnabled = true;
                 Serialization.serialize(this.isAutoLogonEnabled);
                 Save.restartComputer();*/
                 this.initSaveViewer();
             }
-            
+
         }
         #endregion
 
@@ -168,6 +173,7 @@ namespace clientbackup
                 if (DialogResult == System.Windows.Forms.DialogResult.OK)
                 {
                     this.nextSave = rsf.getNextSave();
+                    this.lbDateProchaineSauvegarde1.Text = this.nextSave.ToShortDateString() + " à " + c.getHeure() + "h" + c.getMinute();
                     this.myTimer.Start();
                 }
                 else
@@ -184,40 +190,32 @@ namespace clientbackup
         public bool checkSaveConditions()
         {
             DateTime lastSave = Serialization.deserializeLastSaveDate(false);
-            bool check = false;
+            //this.nextSave = initNextSave(lastSave, period, heure, minute);
             int heure = Convert.ToInt32(this.c.getHeure());
             int minute = Convert.ToInt32(this.c.getMinute());
             int period = Convert.ToInt32(this.c.getPeriode());
+            bool check = false;
             try
             {
-                this.nextSave = initNextSave(lastSave, period, heure, minute);
+                //this.nextSave = initNextSave(lastSave, period, heure, minute);
                 this.tempsRestant = this.nextSave - DateTime.Now;
                 TimeSpan tempsEcoule = DateTime.Now - lastSave;
-                if (Serialization.deserializeLastSaveDate(false).Year == 2000)
-                {
-                    this.lbDateProchaineSauvegarde1.ForeColor = Color.Red;
-                    this.lbDateProchaineSauvegarde1.Text = "non planifiée";
-                }
-                else
-                {
-                    this.lbDateProchaineSauvegarde1.Text = this.nextSave.ToShortDateString() + " à " + c.getHeure() + "h" + c.getMinute();
-                }
-                this.actualiseLbCompteARebours(this.tempsRestant);
+                //this.actualiseLbCompteARebours(this.tempsRestant);
                 if (this.tempsRestant.Days == 0 && this.tempsRestant.Hours < 15)
                 {
                     ShutdownBlockReasonCreate(this.Handle, "Une sauvegarde automatique va être éffectuée à " + c.getHeure() + " h " + c.getMinute() + "." + Environment.NewLine + " Veuillez ne pas éteindre l'ordinateur");
                 }
                 this.afficheAlerte();
-                check = this.verifieSiTempsEstEcoule(tempsRestant);     
+                check = this.verifieSiTempsEstEcoule(tempsRestant);
             }
-            catch{ }
+            catch { }
             return check;
         }
 
         public void initConfig()
         {
             ConfigForm cf = new ConfigForm(this);
-            cf.Show();
+            cf.ShowDialog();
         }
 
         public void afficheNotification(string message, int duree)
@@ -283,12 +281,10 @@ namespace clientbackup
         public void afficheAlerte()
         {
             DateTime lastSave = Serialization.deserializeLastSaveDate(false);
-            this.c = new Configuration();
-            int heure = Convert.ToInt32(c.getHeure());
-            int minute = Convert.ToInt32(c.getMinute());
-            int period = Convert.ToInt32(c.getPeriode());
-            DateTime nextSave = c.getNextSaveDate(); 
-            TimeSpan tempsRestant = nextSave - DateTime.Now;
+            int heure = Convert.ToInt32(this.c.getHeure());
+            int minute = Convert.ToInt32(this.c.getMinute());
+            int period = Convert.ToInt32(this.c.getPeriode());
+            TimeSpan tempsRestant = this.nextSave - DateTime.Now;
 
             if (this.tempsRestant.Days == 0 && this.tempsRestant.Hours < 5 && DateTime.Now.Second == 0 && (DateTime.Now.Minute == 0 || DateTime.Now.Minute == 30))
             {
@@ -303,22 +299,22 @@ namespace clientbackup
 
         public void initSaveViewer()
         {
-            SaveViewer sv = new SaveViewer(this.sauvegarde);
+            SaveViewer sv = new SaveViewer(this.sauvegarde, this);
             sv.Show();
         }
 
-       /* public bool isOpen(Form frm)
-        {
-            bool b = false;
-            foreach (Form f in Application.OpenForms)
-            {
-                if (frm.GetType() == f.GetType())
-                {
-                    b = true;
-                }
-            }
-            return b;
-        } */
+        /* public bool isOpen(Form frm)
+         {
+             bool b = false;
+             foreach (Form f in Application.OpenForms)
+             {
+                 if (frm.GetType() == f.GetType())
+                 {
+                     b = true;
+                 }
+             }
+             return b;
+         } */
 
         public void notifyIcconAlerte(int heure, int minute, string message, int duree)
         {
@@ -357,11 +353,11 @@ namespace clientbackup
 
         private void effacerToolStripMenuItem_Click(object sender, EventArgs e)
         {
-           DialogResult r =  MessageBox.Show("Effacer le log","êtes-vous sûr?",MessageBoxButtons.YesNo);
-           if (r == System.Windows.Forms.DialogResult.Yes)
-           {
-               Log.effacer();
-           }
+            DialogResult r = MessageBox.Show("Effacer le log", "êtes-vous sûr?", MessageBoxButtons.YesNo);
+            if (r == System.Windows.Forms.DialogResult.Yes)
+            {
+                Log.effacer();
+            }
         }
 
         private void consulterToolStripMenuItem_Click(object sender, EventArgs e)
@@ -371,35 +367,29 @@ namespace clientbackup
 
         private void btnCible_Click(object sender, EventArgs e)
         {
-            System.Diagnostics.Process.Start(this.c.getPath() + @"\" + Environment.UserName);
+            try
+            {
+                System.Diagnostics.Process.Start(this.c.getPath() + @"\" + Environment.UserName);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
-        public void loadConfigForm()
+        public void initWaitForm()
         {
-            ConfigForm cf = new ConfigForm(this);
-            cf.Show();
+            WaitForm wf = new WaitForm();
+            wf.ShowDialog();
         }
 
-        public BackgroundWorker getBackgroundWorker()
+        private void ti_Tick(Object sender, EventArgs e)
         {
-            return this.BWLoadingImage;
+            this.i++;
         }
-
-        public Form getWaitForm()
+        public void setLbDateProchaineSauvegarde(DateTime d)
         {
-            return this.wf;
-        }
-
-        private void BWLoadingImage_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            this.wf.Close();
-        }
-
-        private void BWLoadingImage_DoWork(object sender, DoWorkEventArgs e)
-        {
-            this.wf = new WaitForm();
-            this.wf.Show();
-            this.loadConfigForm();
+            this.lbDateProchaineSauvegarde1.Text = d.ToShortDateString() + " à " + this.c.getHeure() + "h" + this.c.getMinute();
         }
 
         public void setLbEtatDerniereSauvegarde()

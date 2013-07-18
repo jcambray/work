@@ -14,8 +14,9 @@ namespace clientbackup
 
         private Save s;
         private double nb;
+        private MainForm mainform;
 
-        public SaveViewer(Save save)
+        public SaveViewer(Save save, MainForm mf)
         {
             InitializeComponent();
             this.nb = 0;
@@ -23,6 +24,7 @@ namespace clientbackup
             save.setBgwk(this.backgroundWorker);
             this.backgroundWorker.RunWorkerAsync(s.getNbFichiersCopie());
             this.lbAvancementSauvegarde.Text = "0";
+            this.mainform = mf;
         }
         
         public void ProgressBarProgress()
@@ -47,6 +49,12 @@ namespace clientbackup
             backgroundWorker.Dispose();
             backgroundWorker.CancelAsync();
             this.Close();
+            mainform.setLbEtatDerniereSauvegarde();
+            DateTime lastSave = Serialization.deserializeLastSaveDate(false);
+            Configuration c = new Configuration();
+            DateTime d = MainForm.initNextSave(lastSave, c.getPeriode(), c.getHeure(), c.getMinute());
+            this.mainform.setLbDateProchaineSauvegarde(d);
+            s.checkSaveNumber();
             MessageBox.Show("sauvegarde terminée.");
             this.s.setBgwk(null);
         }

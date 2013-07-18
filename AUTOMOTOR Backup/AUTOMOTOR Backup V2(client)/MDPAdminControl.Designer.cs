@@ -67,6 +67,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
+            this.label1.Image = ((System.Drawing.Image)(resources.GetObject("label1.Image")));
             this.label1.Location = new System.Drawing.Point(56, 13);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(117, 13);
@@ -78,6 +79,7 @@
             this.AcceptButton = this.btnOK;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
             this.CancelButton = this.btnAnnuler;
             this.ClientSize = new System.Drawing.Size(228, 90);
             this.Controls.Add(this.label1);

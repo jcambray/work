@@ -64,6 +64,7 @@
             this.tbMDPAdmin = new System.Windows.Forms.TextBox();
             this.lbMDPAdmin = new System.Windows.Forms.Label();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.treeViewFichiers = new System.Windows.Forms.TreeView();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.NUDInterval)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
@@ -124,7 +125,7 @@
             // btnBrowse
             // 
             this.btnBrowse.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnBrowse.Location = new System.Drawing.Point(418, 112);
+            this.btnBrowse.Location = new System.Drawing.Point(418, 114);
             this.btnBrowse.Name = "btnBrowse";
             this.btnBrowse.Size = new System.Drawing.Size(75, 23);
             this.btnBrowse.TabIndex = 6;
@@ -135,17 +136,18 @@
             // treeview
             // 
             this.treeview.CheckBoxes = true;
-            this.treeview.Location = new System.Drawing.Point(95, 438);
+            this.treeview.Location = new System.Drawing.Point(28, 474);
             this.treeview.Name = "treeview";
-            this.treeview.Size = new System.Drawing.Size(366, 301);
+            this.treeview.Size = new System.Drawing.Size(245, 265);
             this.treeview.TabIndex = 7;
             this.treeview.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.treeview_AfterCheck);
+            this.treeview.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeview_NodeMouseClick);
             // 
             // label4
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(271, 82);
+            this.label4.Location = new System.Drawing.Point(269, 82);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(10, 13);
             this.label4.TabIndex = 8;
@@ -154,13 +156,15 @@
             // tbMinutes
             // 
             this.tbMinutes.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tbMinutes.Location = new System.Drawing.Point(287, 79);
+            this.tbMinutes.Location = new System.Drawing.Point(282, 79);
             this.tbMinutes.Name = "tbMinutes";
             this.tbMinutes.Size = new System.Drawing.Size(26, 20);
             this.tbMinutes.TabIndex = 9;
             // 
             // groupBox1
             // 
+            this.groupBox1.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("groupBox1.BackgroundImage")));
+            this.groupBox1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.groupBox1.Controls.Add(this.NUDInterval);
             this.groupBox1.Controls.Add(this.label10);
             this.groupBox1.Controls.Add(this.label9);
@@ -202,7 +206,7 @@
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.label10.AutoSize = true;
             this.label10.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label10.Location = new System.Drawing.Point(371, 44);
+            this.label10.Location = new System.Drawing.Point(290, 44);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(35, 13);
             this.label10.TabIndex = 23;
@@ -212,7 +216,7 @@
             // 
             this.label9.AutoSize = true;
             this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label9.Location = new System.Drawing.Point(48, 154);
+            this.label9.Location = new System.Drawing.Point(51, 154);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(183, 13);
             this.label9.TabIndex = 22;
@@ -308,6 +312,8 @@
             // groupBox2
             // 
             this.groupBox2.AutoSize = true;
+            this.groupBox2.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("groupBox2.BackgroundImage")));
+            this.groupBox2.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.groupBox2.Controls.Add(this.btnModifMDP);
             this.groupBox2.Controls.Add(this.lbConfirmMDP);
             this.groupBox2.Controls.Add(this.tbConfirmMDP);
@@ -336,7 +342,7 @@
             // 
             this.label7.AutoSize = true;
             this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label7.Location = new System.Drawing.Point(156, 419);
+            this.label7.Location = new System.Drawing.Point(156, 425);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(245, 16);
             this.label7.TabIndex = 19;
@@ -353,6 +359,8 @@
             // groupBox3
             // 
             this.groupBox3.AutoSize = true;
+            this.groupBox3.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("groupBox3.BackgroundImage")));
+            this.groupBox3.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.groupBox3.Controls.Add(this.btnModifMDPAdmin);
             this.groupBox3.Controls.Add(this.lbConfirmMDPAdmin);
             this.groupBox3.Controls.Add(this.tbConfirmMDPAdmin);
@@ -419,12 +427,23 @@
             this.lbMDPAdmin.Text = "Mot de passe:";
             this.lbMDPAdmin.Visible = false;
             // 
+            // treeViewFichiers
+            // 
+            this.treeViewFichiers.CheckBoxes = true;
+            this.treeViewFichiers.Location = new System.Drawing.Point(279, 474);
+            this.treeViewFichiers.Name = "treeViewFichiers";
+            this.treeViewFichiers.Size = new System.Drawing.Size(244, 265);
+            this.treeViewFichiers.TabIndex = 23;
+            this.treeViewFichiers.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.treeViewFichiers_AfterCheck);
+            // 
             // ConfigForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
             this.ClientSize = new System.Drawing.Size(557, 780);
             this.ControlBox = false;
+            this.Controls.Add(this.treeViewFichiers);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.label7);
@@ -486,5 +505,6 @@
         private System.Windows.Forms.TextBox tbMDPAdmin;
         private System.Windows.Forms.Label lbMDPAdmin;
         private System.Windows.Forms.ToolTip toolTip1;
+        private System.Windows.Forms.TreeView treeViewFichiers;
     }
 }

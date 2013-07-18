@@ -90,6 +90,7 @@
       <DependentUpon>ConfigForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Log.cs" />
+    <Compile Include="Mailer.cs" />
     <Compile Include="MDPAdminControl.cs">
       <SubType>Form</SubType>
     </Compile>

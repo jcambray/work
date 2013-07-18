@@ -27,7 +27,7 @@ namespace clientbackup
             this.comboBox1.Items.Add("30 minutes");
             this.comboBox1.Items.Add("1 heure");
             this.comboBox1.Items.Add("2 heures");
-            this.comboBox1.SelectionStart = 0;
+            this.comboBox1.SelectedIndex = 0;
             this.m = mf;
             this.nxts = this.m.getNextSave();
             this.lbCAR.Text = "30";

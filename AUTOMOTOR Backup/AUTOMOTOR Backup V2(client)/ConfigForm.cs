@@ -2,11 +2,6 @@
 using System.IO;
 using System.Collections;
 using System.Configuration;
-using System.Text;
-using System.Drawing;
-using System.Web;
-using System.ComponentModel;
-using System.Threading;
 
 using System.Windows.Forms;
 
@@ -16,6 +11,7 @@ namespace clientbackup
     {
         private bool btnModifMDPClicked = false;
         private bool btnModifMDPAdminClicked = false;
+        private ArrayList folders;
         private ArrayList files;
         private MainForm form;
         private string ancienInterval;
@@ -23,11 +19,13 @@ namespace clientbackup
         public ConfigForm(MainForm f)
         {
             InitializeComponent();
-            this.files = Serialization.deserializeXML();
+            this.folders = Serialization.deserializeXML("folders.xml");
+            this.files = new ArrayList();
             ImageList imgList = new ImageList();
             this.treeview.ImageList = imgList;
+            this.treeViewFichiers.ImageList = imgList;
             imgList.Images.Add(System.Drawing.Image.FromFile(Environment.CurrentDirectory + @"/images/dossier_windows.png"));
-            
+            imgList.Images.Add(System.Drawing.Image.FromFile(Environment.CurrentDirectory + @"/images/fichier.jpg"));
             this.NUDInterval.Value = Convert.ToDecimal(ConfigurationManager.AppSettings["period"]);
             this.tbHour.Text = ConfigurationManager.AppSettings["heure"];
             this.tbMinutes.Text = ConfigurationManager.AppSettings["minute"];
@@ -40,7 +38,7 @@ namespace clientbackup
             this.toolTip1.ToolTipIcon = ToolTipIcon.Warning;
             this.form = f;
             this.populatetreeView();
-            //this.form.getWaitForm().Close();
+            this.form.configFormThread.Abort();
         }
 
         private void btnBrowse_Click(object sender, EventArgs e)
@@ -54,6 +52,7 @@ namespace clientbackup
 
         public void populatetreeView()
         {
+            this.treeview.BeginUpdate();
             if (this.treeview.Nodes.Count > 0)
             {
                 this.treeview.Nodes.Clear();
@@ -64,6 +63,7 @@ namespace clientbackup
             this.recursiveDirSearch(node, directory.FullName);
             this.checkSelectedFiles(this.treeview.Nodes[0]);
             this.checkParentnodes(node);
+            this.treeview.EndUpdate();
         }
 
         public void recursiveDirSearch(TreeNode parentNode, string path)
@@ -71,9 +71,10 @@ namespace clientbackup
             try
             {
                 DirectoryInfo directory = new DirectoryInfo(path);
-                this.fileSearch(parentNode, directory);
+                //this.fileSearch(parentNode, directory);
                 if ((directory.Attributes) != FileAttributes.System)
                 {
+                    
                     foreach (DirectoryInfo dir in directory.GetDirectories())
                     {
                         if ((dir.Attributes & FileAttributes.System) != FileAttributes.System)
@@ -106,8 +107,8 @@ namespace clientbackup
                     {
                         TreeNode childNode = new TreeNode(f.Name);
                         childNode.Checked = parentNode.Checked;
+                        childNode.ImageIndex = 1;
                         parentNode.Nodes.Add(childNode);
-                        childNode.ForeColor = Color.Gray;
                     }
                 }
             }
@@ -123,7 +124,8 @@ namespace clientbackup
             this.recursiveNodeSearch(this.treeview.Nodes[0], pathesList);
             try
             {
-                Serialization.serializeToXML(pathesList);
+                Serialization.serializeToXML(pathesList,"folders.xml");
+                Serialization.serializeToXML(this.files, "files.xml");
             }
             catch (Exception ex)
             {
@@ -154,9 +156,12 @@ namespace clientbackup
 
         public bool isDirectory(string path)
         {
-            //FileInfo f = new FileInfo(path);
-            //return f.Attributes == FileAttributes.Directory;
-            return Directory.Exists(path);
+            bool ok = false;
+            if(Directory.Exists(@"C:\" + path))
+            {
+                ok = true;
+            }
+            return ok;
         } 
 
         public ArrayList recursiveNodeSearch(TreeNode parentNode, ArrayList list)
@@ -165,7 +170,7 @@ namespace clientbackup
             {
                 if (n.Checked)
                 {
-                    if(!this.isDirectory(n.FullPath))
+                    if(this.isDirectory(n.FullPath))
                     {
                         list.Add(n.FullPath);
                     }
@@ -260,7 +265,7 @@ namespace clientbackup
             {
                 foreach (TreeNode n in parentNode.Nodes)
                 {
-                    foreach (string s in this.files)
+                    foreach (string s in this.folders)
                         if (n.FullPath == s)
                         {
                             n.Checked = true;
@@ -363,11 +368,87 @@ namespace clientbackup
             }
             else
             {
-                foreach (TreeNode child in tn.Nodes)
+                    foreach (TreeNode child in tn.Nodes)
+                    {
+                        child.Checked = false;
+                    }
+              }
+        }
+
+        public void populateTVFichiers(TreeNode n)
+        {
+            this.treeViewFichiers.Nodes.Clear();
+            DirectoryInfo dir = new DirectoryInfo(@"C:\" + n.FullPath);
+            TreeNode parent = new TreeNode(n.Text);
+            parent.Checked = n.Checked;
+            this.treeViewFichiers.Nodes.Add(parent);
+            this.fileSearch(this.treeViewFichiers.Nodes[0],dir);
+            this.treeViewFichiers.Nodes[0].Expand();
+        }
+
+        private void treeview_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
+        {
+            this.populateTVFichiers(e.Node);
+        }
+
+        private void treeViewFichiers_AfterCheck(object sender, TreeViewEventArgs e)
+        {
+            this.actualiseNode(e.Node);
+            if (e.Node != this.treeViewFichiers.Nodes[0])
+            {
+                this.saveExcludedFiles(e.Node);
+            }
+        }
+
+        public void saveExcludedFiles(TreeNode n)
+        {
+            if (n == this.treeViewFichiers.Nodes[0] & !n.Checked)
+            {
+                foreach (TreeNode child in n.Nodes)
                 {
-                    child.Checked = false;
+                    files.Add(child.Text);
                 }
             }
+            else
+                if (n == this.treeViewFichiers.Nodes[0] & n.Checked)
+                {
+                    foreach (TreeNode child in n.Nodes)
+                    {
+                        foreach (string s in files)
+                        {
+                            if (child.Text == s)
+                            {
+                                if (this.files.Count > 0)
+                                {
+                                    files.Remove(s);
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                    if (!n.Checked)
+                    {
+                        files.Add(n.Text);
+                    }
+                    else
+                    {
+                        try
+                        {
+                            foreach (string s in files)
+                            {
+                                if (n.Text == s)
+                                {
+                                    if (this.files.Count > 0)
+                                    {
+                                        files.Remove(s);
+                                    }
+                                }
+                            }
+                        }
+                        catch (InvalidOperationException)
+                        { }
+                    }
         }
     }
 
