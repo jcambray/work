@@ -18,6 +18,7 @@ namespace clientbackup
         {
             InitializeComponent();
             this.mdp = password;
+            this.ActiveControl = this.tbMDP;
         }
 
         private void btnOK_Click(object sender, EventArgs e)

@@ -65,6 +65,7 @@
             this.lbMDPAdmin = new System.Windows.Forms.Label();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.treeViewFichiers = new System.Windows.Forms.TreeView();
+            this.btnActualiser = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.NUDInterval)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
@@ -436,6 +437,17 @@
             this.treeViewFichiers.TabIndex = 23;
             this.treeViewFichiers.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.treeViewFichiers_AfterCheck);
             // 
+            // btnActualiser
+            // 
+            this.btnActualiser.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btnActualiser.Location = new System.Drawing.Point(28, 445);
+            this.btnActualiser.Name = "btnActualiser";
+            this.btnActualiser.Size = new System.Drawing.Size(75, 23);
+            this.btnActualiser.TabIndex = 24;
+            this.btnActualiser.Text = "actualiser";
+            this.btnActualiser.UseVisualStyleBackColor = true;
+            this.btnActualiser.Click += new System.EventHandler(this.btnActualiser_Click);
+            // 
             // ConfigForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -443,6 +455,7 @@
             this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
             this.ClientSize = new System.Drawing.Size(557, 780);
             this.ControlBox = false;
+            this.Controls.Add(this.btnActualiser);
             this.Controls.Add(this.treeViewFichiers);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.label8);
@@ -506,5 +519,6 @@
         private System.Windows.Forms.Label lbMDPAdmin;
         private System.Windows.Forms.ToolTip toolTip1;
         private System.Windows.Forms.TreeView treeViewFichiers;
+        private System.Windows.Forms.Button btnActualiser;
     }
 }

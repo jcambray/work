@@ -326,6 +326,18 @@ namespace clientbackup
             }
 
         }
+
+        public int EspaceDispo()
+        {
+            DriveInfo di = new DriveInfo(new DirectoryInfo(c.getPath()).Root.Name);
+            return (int)di.AvailableFreeSpace;
+        }
+
+        public int EspaceToal()
+        {
+            DriveInfo di = new DriveInfo(new DirectoryInfo(c.getPath()).Root.Name);
+            return (int)di.TotalSize;
+        }
     }
 
 }
