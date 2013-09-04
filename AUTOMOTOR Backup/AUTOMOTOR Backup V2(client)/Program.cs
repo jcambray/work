@@ -11,27 +11,28 @@ namespace clientbackup
 {
     static class Program
     {
-        //static Mutex m;
+        static Mutex m;
         /// <summary>
         /// Point d'entrée principal de l'application.
         /// </summary>
         [STAThread]
         static void Main()
         {
-            /*bool owned;
+            Thread.Sleep(1000);
+            bool owned;
             Mutex m = new Mutex(true, Application.ProductName, out owned);
             if (owned)
-            {*/
+            {
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
                 MainForm mf = new MainForm();
                 Application.Run(mf);
-                //m.ReleaseMutex();
-            /*}
+                m.ReleaseMutex();
+            }
             else
             {
                 MessageBox.Show("L'application est déja lancée", Application.ProductName);
-            }*/
+            }
         }
     }
 }

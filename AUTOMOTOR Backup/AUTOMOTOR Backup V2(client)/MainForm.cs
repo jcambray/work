@@ -23,17 +23,17 @@ namespace clientbackup
             InitializeComponent();
             this.lbProchaineSauvegarde1.Visible = false;
             this.lbCompteARebours.Visible = false;
-            this.Text = "AUTOMOTOR Backup v" + Application.ProductVersion;
+            this.Text = "AUTOMOTOR Backup 2.0";
             this.lbUtilisateur1.Text = Environment.UserName;
             this.minimize();
             this.sauvegarde = new Save();
-
             //chargement des paramètres de l'application
             //Configuration du Timer
             //Chargement de la date de la derniere sauvegarde
             this.c = new Configuration();
             DateTime lastSave = Serialization.deserializeLastSaveDate(false);
             this.nextSave = initNextSave(lastSave, this.c.getPeriode(), this.c.getHeure(), this.c.getMinute());
+            this.reportDateSauvegarde();
             if (Serialization.deserializeLastSaveDate(false).Year == 2000)
             {
                 this.lbDateProchaineSauvegarde1.ForeColor = Color.Red;
@@ -69,11 +69,19 @@ namespace clientbackup
         [DllImport("user32.dll")]
         public extern static void ShutdownBlockReasonCreate(IntPtr hWnd, [MarshalAs(UnmanagedType.LPWStr)] string pwszReason);
 
+        [DllImport("user32.dll")]
+        public extern static bool shutdownBlockReasonDestroy(IntPtr hWnd, [MarshalAs(UnmanagedType.LPWStr)] string pwszReason);
+
+
+
         protected override void WndProc(ref Message m)
         {
             const int WM_QUERYENDSESSION = 0x0011;
             const int WM_ENDSESSION = 0x0016;
-            if (m.Msg == WM_QUERYENDSESSION || m.Msg == WM_ENDSESSION)
+            if ((m.Msg == WM_QUERYENDSESSION || m.Msg == WM_ENDSESSION) && ((DateTime.Now.Day * DateTime.Now.Month * DateTime.Now.Year) != (nextSave.Day * nextSave.Month * nextSave.Year)))
+            { Application.Exit(); }
+            else
+                if(m.Msg == WM_QUERYENDSESSION || m.Msg == WM_ENDSESSION)
             {
                 return;
             }
@@ -135,13 +143,12 @@ namespace clientbackup
         //lancement du redémarrage de l'ordinateur
         private void btnSave_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("La sauvegarde necessite le redemarrage de l'ordinateur, voulez-vous redémarrer maintenant?", " ", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            if (MessageBox.Show("La sauvegarde necessite le redemarrage de l'ordinateur, voulez-vous redémarrer maintenant?"," ", MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
-                /*RegistryModifier.enableAutoLogon(ConfigurationManager.AppSettings["password"]);
+                RegistryModifier.enableAutoLogon(ConfigurationManager.AppSettings["password"]);
                 this.isAutoLogonEnabled = true;
                 Serialization.serialize(this.isAutoLogonEnabled);
-                Save.restartComputer();*/
-                this.initSaveViewer();
+                Save.restartComputer();
             }
 
         }
@@ -205,6 +212,8 @@ namespace clientbackup
                 {
                     ShutdownBlockReasonCreate(this.Handle, "Une sauvegarde automatique va être éffectuée à " + c.getHeure() + " h " + c.getMinute() + "." + Environment.NewLine + " Veuillez ne pas éteindre l'ordinateur");
                 }
+                else
+                { shutdownBlockReasonDestroy(this.Handle, "Arrêt autorisé par l'application"); }
                 this.afficheAlerte();
                 check = this.verifieSiTempsEstEcoule(tempsRestant);
             }
@@ -280,11 +289,11 @@ namespace clientbackup
 
         public void afficheAlerte()
         {
-            DateTime lastSave = Serialization.deserializeLastSaveDate(false);
+            /*DateTime lastSave = Serialization.deserializeLastSaveDate(false);
             int heure = Convert.ToInt32(this.c.getHeure());
             int minute = Convert.ToInt32(this.c.getMinute());
-            int period = Convert.ToInt32(this.c.getPeriode());
-            TimeSpan tempsRestant = this.nextSave - DateTime.Now;
+            int period = Convert.ToInt32(this.c.getPeriode());*/
+            this.tempsRestant = this.nextSave - DateTime.Now;
 
             if (this.tempsRestant.Days == 0 && this.tempsRestant.Hours < 5 && DateTime.Now.Second == 0 && (DateTime.Now.Minute == 0 || DateTime.Now.Minute == 30))
             {
@@ -369,7 +378,7 @@ namespace clientbackup
         {
             try
             {
-                System.Diagnostics.Process.Start(this.c.getPath() + @"\" + Environment.UserName);
+                System.Diagnostics.Process.Start(this.c.getPath());
             }
             catch (Exception ex)
             {
@@ -395,7 +404,6 @@ namespace clientbackup
         public void setLbEtatDerniereSauvegarde()
         {
             this.sauvegarde.verifieSiTerminee();
-            //DateTime dt = Serialization.deserializeLastSaveDate(false);
             if (this.sauvegarde.verifieSiTerminee() == '2')
             {
                 this.lbEtatSauvegarde.Text = " Terminée.";
@@ -419,6 +427,14 @@ namespace clientbackup
                             this.lbEtatSauvegarde.Text = "N/A";
                             this.lbEtatSauvegarde.ForeColor = Color.Red;
                         }
+        }
+
+        public void reportDateSauvegarde()
+        {
+            if ((this.nextSave < DateTime.Now) || this.sauvegarde.verifieSiTerminee() == '0')
+            {
+                this.nextSave = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day,this.c.getHeure(),this.c.getMinute(),0);
+            }
         }
     }
 }

@@ -20,7 +20,7 @@ namespace clientbackup
         {
             InitializeComponent();
             //remplissage des valeurs de la déroulante
-            this.label2.Text = "Une sauvegarde doit avoir lieu dès maintenant.Le redémarrage de l'ordinateur est necessaire" + Environment.NewLine + "Voulez-vous la reporter?";
+            this.label2.Text = "Le redémarrage de l'ordinateur est necessaire. Voulez-vous reporter la Sauvegarde ?";
             this.comboBox1.Items.Add("redémarrer maintenant");
             this.comboBox1.Items.Add("10 minutes");
             this.comboBox1.Items.Add("15 minutes");

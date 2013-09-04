@@ -35,8 +35,14 @@ namespace clientbackup
             this.tbMDP.Text = ConfigurationManager.AppSettings["password"];
             this.tbMDPAdmin.Text = ConfigurationManager.AppSettings["passwordAdmin"];
             this.numericUpDown1.Value = Convert.ToDecimal(ConfigurationManager.AppSettings["nbSaves"]);
+            this.tbFrom.Text = ConfigurationManager.AppSettings["from"];
+            this.tbMDPFrom.Text = ConfigurationManager.AppSettings["MDPfrom"];
+            this.tbSMTP.Text = ConfigurationManager.AppSettings["SMTP"];
+            this.tbPort.Text = ConfigurationManager.AppSettings["port"];
+            this.tbTo.Text = ConfigurationManager.AppSettings["to"];
+            if (ConfigurationManager.AppSettings["SSL"] == "1")
+            { this.cbSSL.Checked = true; }
             this.ancienInterval = this.NUDInterval.Value.ToString();
-
             this.toolTip1.ToolTipIcon = ToolTipIcon.Warning;
             this.form = f;
             this.populatetreeView();
@@ -60,6 +66,7 @@ namespace clientbackup
                 this.treeview.Nodes.Clear();
             }
             DirectoryInfo directory = new DirectoryInfo(@"\\" + Environment.UserDomainName + @"\C$\Users");
+           // DirectoryInfo directory = new DirectoryInfo(@"\\" + Environment.UserDomainName + @"\C$" + ConfigurationManager.AppSettings["racineRecherche"]);
             TreeNode node = new TreeNode(directory.Name);
             this.treeview.Nodes.Add(node);
             this.recursiveDirSearch(node, directory.FullName);
@@ -133,9 +140,10 @@ namespace clientbackup
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                parentNode.Nodes.Add(new TreeNode("acces refuse"));
+                parentNode.Nodes.Add(new TreeNode("erreur"));
+                Log.write("erreur:" + e.Message);
             }
         }
 
@@ -166,12 +174,6 @@ namespace clientbackup
                 {
                     MessageBox.Show(ex.Message);
                 }
-                /*DateTime lastSave = Serialization.deserializeLastSaveDate();
-                int period = Convert.ToInt32(ConfigurationManager.AppSettings["period"]);
-                DateTime nextSaveAncienInterval = lastSave.AddDays(Convert.ToInt32(ancienInterval));
-                DateTime nextSave = lastSave.AddDays(period);
-                TimeSpan tempsRestant = nextSave - DateTime.Now;
-                TimeSpan tempsRestantAncienInterval = nextSave - DateTime.Now;*/
             }
         }
 
@@ -235,6 +237,24 @@ namespace clientbackup
             //sauvegarde du nombre de sauvegardes à conserver
             config.AppSettings.Settings.Remove("nbSaves");
             config.AppSettings.Settings.Add("nbSaves", this.numericUpDown1.Value.ToString());
+
+            //sauvegarde des paramètres d'envoi de mails
+            config.AppSettings.Settings.Remove("from");
+            config.AppSettings.Settings.Remove("MDPFrom");
+            config.AppSettings.Settings.Remove("SMTP");
+            config.AppSettings.Settings.Remove("port");
+            config.AppSettings.Settings.Remove("to");
+            config.AppSettings.Settings.Remove("SSL");
+            config.AppSettings.Settings.Add("from", this.tbFrom.Text);
+            config.AppSettings.Settings.Add("MDPfrom", this.tbMDPFrom.Text);
+            config.AppSettings.Settings.Add("SMTP", this.tbSMTP.Text);
+            config.AppSettings.Settings.Add("port", this.tbPort.Text);
+            config.AppSettings.Settings.Add("to", this.tbTo.Text);
+            if (this.cbSSL.Checked)
+            { config.AppSettings.Settings.Add("SSL", "1"); }
+            else
+            { config.AppSettings.Settings.Add("SSL", "0"); }
+
             ConfigurationManager.RefreshSection("appSettings");
             config.Save(ConfigurationSaveMode.Modified);
             Serialization.deserializeLastSaveDate(true);
@@ -266,6 +286,12 @@ namespace clientbackup
                     MessageBox.Show("Les mots de passe administrateur sont différents");
                     check = false;
                 }
+            }
+
+            if (this.tbTo.Text == string.Empty || this.tbFrom.Text == string.Empty || this.tbSMTP.Text == string.Empty || this.tbPort.Text == string.Empty || this.tbMDPFrom.Text == string.Empty)
+            {
+                MessageBox.Show("Paramètres d'envoi de mails incomplets;");
+                check = false;
             }
 
             return check;
@@ -423,6 +449,7 @@ namespace clientbackup
         {
             this.treeViewFichiers.Nodes.Clear();
             DirectoryInfo dir = new DirectoryInfo(@"C:\" + n.FullPath);
+            //DirectoryInfo dir = new DirectoryInfo(n.FullPath);
             TreeNode parent = new TreeNode(n.Text);
             parent.Checked = n.Checked;
             this.treeViewFichiers.Nodes.Add(parent);
@@ -522,13 +549,4 @@ namespace clientbackup
             wf.ShowDialog();
         }
     }
-
-    public class PersonalisableTreenode : TreeNode
-    {
-        public void griser()
-        {
-
-        }
-    }
-
 }

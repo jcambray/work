@@ -12,7 +12,6 @@ namespace clientbackup
 
     class RegistryModifier
     {
-        
         public static void enableAutoLogon(string password)
         {
             RegistryKey regKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64);
@@ -34,10 +33,18 @@ namespace clientbackup
 
         public static void StartWithWindows()
         {
-            RegistryKey regKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64);
-            regKey = regKey.CreateSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run");
-            regKey.SetValue(@"AUTOMOTOR Backup",Application.ExecutablePath);
-            regKey.Close();
+            if (ConfigurationManager.AppSettings["autoStart"] == "0")
+            {
+                RegistryKey regKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64);
+                regKey = regKey.CreateSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run");
+                regKey.SetValue(@"AUTOMOTOR Backup", Application.ExecutablePath);
+                regKey.Close();
+                System.Configuration.Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+                config.AppSettings.Settings.Remove("autoStart");
+                config.AppSettings.Settings.Add("autoStart", "1");
+                ConfigurationManager.RefreshSection("appSettings");
+                config.Save(ConfigurationSaveMode.Modified);
+            }
         }
     }
 }

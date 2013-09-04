@@ -52,6 +52,7 @@ namespace clientbackup
         public static ArrayList deserializeList()
         {
             FileStream fichier = new FileStream(Environment.CurrentDirectory + @"/Data/files.txt", FileMode.Open);
+
             BinaryFormatter bf = new BinaryFormatter();
             ArrayList list = (ArrayList)bf.Deserialize(fichier);
             fichier.Dispose();
@@ -64,6 +65,7 @@ namespace clientbackup
             FileStream fichier = new FileStream(Environment.CurrentDirectory + @"/Data/" + filename, FileMode.Create);
             serializer.Serialize(fichier, list);
             fichier.Close();
+            fichier.Dispose();
         }
 
         public static ArrayList deserializeXML(string filename)
@@ -74,6 +76,7 @@ namespace clientbackup
                 XmlSerializer serializer = new XmlSerializer(typeof(ArrayList));
                 ArrayList list = (ArrayList)serializer.Deserialize(fichier);
                 fichier.Close();
+                fichier.Dispose();
                 return list;
             }
             catch
@@ -106,6 +109,7 @@ namespace clientbackup
                 {
                     serializeLastSaveDate(DateTime.Now);
                 }
+
                 return new DateTime(2000,1,1);
             }
         }

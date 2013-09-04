@@ -22,7 +22,7 @@ namespace clientbackup
             this.nb = 0;
             this.s = save;
             save.setBgwk(this.backgroundWorker);
-            this.backgroundWorker.RunWorkerAsync(s.getNbFichiersCopie());
+            this.backgroundWorker.RunWorkerAsync(s.getInfosCopie());
             this.lbAvancementSauvegarde.Text = "0";
             this.mainform = mf;
         }
@@ -39,8 +39,9 @@ namespace clientbackup
 
         private void backgroundWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            double fichierscopies = s.getNbFichiersCopie();
-            this.lbAvancementSauvegarde.Text = fichierscopies.ToString(); 
+            string fichierscopies = s.getInfosCopie()[0];
+            this.lbAvancementSauvegarde.Text = fichierscopies;
+            this.lbNomFichier.Text = s.getInfosCopie()[1];
         }
 
    
@@ -55,6 +56,9 @@ namespace clientbackup
             DateTime d = MainForm.initNextSave(lastSave, c.getPeriode(), c.getHeure(), c.getMinute());
             this.mainform.setLbDateProchaineSauvegarde(d);
             s.checkSaveNumber();
+            Mailer m = new Mailer(this.s);
+            m.sendNotificationSauvegarde();
+            s.setNbFichiersCopies(0);
             MessageBox.Show("sauvegarde terminée.");
             this.s.setBgwk(null);
         }
@@ -64,7 +68,7 @@ namespace clientbackup
             backgroundWorker.CancelAsync();
             this.s.setBgwk(null);
             backgroundWorker.Dispose();
-        }
+       }
 
         private void timer1_Tick(object sender, EventArgs e)
         {
