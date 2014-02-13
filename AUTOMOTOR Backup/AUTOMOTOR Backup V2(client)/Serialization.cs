@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections;
 using System.IO;
-using System.Runtime.Serialization;
 using System.Xml.Serialization;
 using System.Configuration;
-using System.Windows.Forms;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Linq;
-using System.Text;
 
 namespace clientbackup
 {
@@ -97,7 +92,7 @@ namespace clientbackup
         {
             try
             {
-                FileStream fichier = new FileStream(Environment.CurrentDirectory + @"/Data/lastSaveDate.aut", FileMode.Open);
+                 FileStream fichier = new FileStream(Environment.CurrentDirectory + @"/Data/lastSaveDate.aut", FileMode.Open);
                 BinaryFormatter bf = new BinaryFormatter();
                 DateTime dt = (DateTime)bf.Deserialize(fichier);
                 fichier.Dispose();

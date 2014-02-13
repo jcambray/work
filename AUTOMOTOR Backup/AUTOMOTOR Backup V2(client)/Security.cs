@@ -8,6 +8,9 @@ namespace clientbackup
 {
     class Security
     {
+
+        private const int caesarConst = 15;
+        
         // Hash an input string and return the hash as
         // a 32 character hexadecimal string.
         public static string toMd5(string input)
@@ -51,5 +54,32 @@ namespace clientbackup
                 return false;
             }
         }
+
+        public string toCaesar(string str, int nb)
+        {
+            char[] c = str.ToCharArray(0, str.Length);
+            for (int i = 0; i < c.Length; i++)
+            {
+                int j = (int)c[i];
+                char newCarac = (char)(j + nb);
+                c[i] = newCarac;
+            }
+             string caesarStr = new string(c);
+            return caesarStr;
+        }
+
+        public string caesarToString(string caesarStr, int nb)
+        {
+            char[] c = caesarStr.ToCharArray(0, caesarStr.Length);
+            for (int i = 0; i < c.Length; i++)
+            {
+                int j = (int)c[i];
+                char newCarac = (char)(j - nb);
+                c[i] = newCarac;
+            }
+            string str = new string(c);
+            return str;
+        }
+
     }
 }

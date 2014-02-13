@@ -41,8 +41,6 @@
             this.myTimer = new System.Windows.Forms.Timer(this.components);
             this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.lbUtilisateur1 = new System.Windows.Forms.Label();
-            this.lbProchaineSauvegarde1 = new System.Windows.Forms.Label();
-            this.lbCompteARebours = new System.Windows.Forms.Label();
             this.lbDateProchaineSauvegarde = new System.Windows.Forms.Label();
             this.lbDateProchaineSauvegarde1 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
@@ -146,26 +144,6 @@
             this.lbUtilisateur1.TabIndex = 6;
             this.lbUtilisateur1.Text = "label1";
             // 
-            // lbProchaineSauvegarde1
-            // 
-            this.lbProchaineSauvegarde1.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.lbProchaineSauvegarde1.AutoSize = true;
-            this.lbProchaineSauvegarde1.Location = new System.Drawing.Point(12, 90);
-            this.lbProchaineSauvegarde1.Name = "lbProchaineSauvegarde1";
-            this.lbProchaineSauvegarde1.Size = new System.Drawing.Size(143, 13);
-            this.lbProchaineSauvegarde1.TabIndex = 5;
-            this.lbProchaineSauvegarde1.Text = "Prochaine sauvegarde dans:";
-            // 
-            // lbCompteARebours
-            // 
-            this.lbCompteARebours.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.lbCompteARebours.AutoSize = true;
-            this.lbCompteARebours.Location = new System.Drawing.Point(192, 90);
-            this.lbCompteARebours.Name = "lbCompteARebours";
-            this.lbCompteARebours.Size = new System.Drawing.Size(35, 13);
-            this.lbCompteARebours.TabIndex = 7;
-            this.lbCompteARebours.Text = "label1";
-            // 
             // lbDateProchaineSauvegarde
             // 
             this.lbDateProchaineSauvegarde.AutoSize = true;
@@ -230,8 +208,6 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.lbDateProchaineSauvegarde1);
             this.Controls.Add(this.lbDateProchaineSauvegarde);
-            this.Controls.Add(this.lbCompteARebours);
-            this.Controls.Add(this.lbProchaineSauvegarde1);
             this.Controls.Add(this.lbUtilisateur1);
             this.Controls.Add(this.menuStrip1);
             this.Controls.Add(this.btnSave);
@@ -261,8 +237,6 @@
         private System.Windows.Forms.ToolStripMenuItem réduireToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem logToolStripMenuItem;
         private System.Windows.Forms.Label lbUtilisateur1;
-        private System.Windows.Forms.Label lbProchaineSauvegarde1;
-        private System.Windows.Forms.Label lbCompteARebours;
         private System.Windows.Forms.Label lbDateProchaineSauvegarde;
         private System.Windows.Forms.Label lbDateProchaineSauvegarde1;
         private System.Windows.Forms.Label label1;

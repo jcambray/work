@@ -16,20 +16,20 @@ namespace clientbackup
         private MainForm m;
         private int i;
         private DateTime nxts;
-        public ReportSaveForm(MainForm mf)
+        public ReportSaveForm(MainForm mf, Save s)
         {
             InitializeComponent();
-            //remplissage des valeurs de la déroulante
+            //Construction de la liste déroulante
             this.label2.Text = "Le redémarrage de l'ordinateur est necessaire. Voulez-vous reporter la Sauvegarde ?";
             this.comboBox1.Items.Add("redémarrer maintenant");
             this.comboBox1.Items.Add("10 minutes");
             this.comboBox1.Items.Add("15 minutes");
-            this.comboBox1.Items.Add("30 minutes");
+            this.comboBox1.Items.Add("30 minutes"); 
             this.comboBox1.Items.Add("1 heure");
             this.comboBox1.Items.Add("2 heures");
             this.comboBox1.SelectedIndex = 0;
             this.m = mf;
-            this.nxts = this.m.getNextSave();
+            this.nxts = s.GetNextSave();
             this.lbCAR.Text = "30";
             this.i = 1;
             this.timer1.Start();

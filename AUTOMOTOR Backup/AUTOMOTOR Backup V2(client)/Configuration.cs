@@ -16,6 +16,7 @@ namespace clientbackup
         private int nbSaves;
         private string path;
         private string password;
+        private char autoShutDown;
         private DateTime nextSaveDate;
 
         public Configuration()
@@ -27,7 +28,7 @@ namespace clientbackup
             this.password = ConfigurationManager.AppSettings["password"];
             this.nbSaves = Convert.ToInt32(ConfigurationManager.AppSettings["nbSaves"]);
             this.nextSaveDate = Convert.ToDateTime(ConfigurationManager.AppSettings["nextSave"]);
-            
+            this.autoShutDown = Convert.ToChar(ConfigurationManager.AppSettings["autoShutDown"]);
         }
 
         public Configuration(int nbj,int h, int min, int per, int nbSav, string p, string pwd)
@@ -40,24 +41,7 @@ namespace clientbackup
             this.path = p;
             this.password = pwd;
         }                    
-        private  string getHostName()
-        {
-            return Dns.GetHostName();
-        }
-        private  string getIpAdress()
-        {
-
-            string adr = ""; ;
-            IPHostEntry ipHostEnt = Dns.GetHostEntry(this.getHostName());
-            foreach (IPAddress IpAdr in ipHostEnt.AddressList)
-            {
-                if (IpAdr.ToString().StartsWith("192."))
-                {
-                    adr = IpAdr.ToString();
-                }
-            }
-            return adr;
-        }
+    
 
         public int getHeure()
         {
@@ -127,6 +111,16 @@ namespace clientbackup
         public DateTime getNextSaveDate()
         {
             return this.nextSaveDate;
+        }
+
+        public char getAutoShutDown()
+        {
+            return this.autoShutDown;
+        }
+
+        public void setAutoShutDown(char c)
+        {
+            this.autoShutDown = c;
         }
 
      

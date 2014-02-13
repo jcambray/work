@@ -49,7 +49,9 @@ namespace clientbackup
 
         public void checkMDP()
         {
-            this.ok = Security.compareToMd5(this.tbMDP.Text,this.mdp);
+            Security secure = new Security();
+            //this.ok = Security.compareToMd5(this.tbMDP.Text,this.mdp);
+            this.ok = this.mdp.Equals(secure.toCaesar(this.tbMDP.Text , 15));
         }
 
         private void btnAnnuler_Click(object sender, EventArgs e)

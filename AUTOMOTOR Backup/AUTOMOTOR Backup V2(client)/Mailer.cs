@@ -48,7 +48,7 @@ namespace clientbackup
                 this.mailMsg.Body = DateTime.Now.ToShortDateString() + " à " + DateTime.Now.Hour + ":" + DateTime.Now.Minute + ": Fin de la sauvegarde" + Environment.NewLine
                 + "Etat: " + etatSauvegarde + "." + Environment.NewLine
                 + "Nombre de fichiers copiés: " + this.sauvegarde.getNbFichiersCopie() + Environment.NewLine
-                + "Volume des données sauvegardées: " + this.sauvegarde.getVolumeFichiers().ToString() + " Mo" + Environment.NewLine
+                + "Volume des données sauvegardées: " + this.sauvegarde.getVolumeFichiers().ToString() + " Mo." + Environment.NewLine
                 + "Espace disponible sur l'emplacement de la sauvegarde: " + (int)sauvegarde.EspaceDispo() + @"/" + (int)sauvegarde.EspaceTotal() + " Go"
                 + Environment.NewLine
                 + Environment.NewLine

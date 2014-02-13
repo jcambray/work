@@ -11,7 +11,7 @@ namespace clientbackup
 {
     static class Program
     {
-        static Mutex m;
+
         /// <summary>
         /// Point d'entrée principal de l'application.
         /// </summary>
@@ -25,9 +25,13 @@ namespace clientbackup
             {
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
-                MainForm mf = new MainForm();
-                Application.Run(mf);
-                m.ReleaseMutex();
+
+                    MainForm mf = new MainForm();
+                    if (mf.launch)
+                    { Application.Run(mf); }
+                else
+                    { Application.Exit(); }
+                    m.ReleaseMutex();
             }
             else
             {

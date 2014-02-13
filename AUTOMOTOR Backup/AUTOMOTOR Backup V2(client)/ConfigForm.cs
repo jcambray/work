@@ -21,6 +21,7 @@ namespace clientbackup
         public ConfigForm(MainForm f)
         {
             InitializeComponent();
+            //chargement des paramètres 
             this.folders = Serialization.deserializeXML("folders.xml");
             this.files = new ArrayList();
             ImageList imgList = new ImageList();
@@ -33,7 +34,8 @@ namespace clientbackup
             this.tbMinutes.Text = ConfigurationManager.AppSettings["minute"];
             this.tbPath.Text = ConfigurationManager.AppSettings["path"];
             this.tbMDP.Text = ConfigurationManager.AppSettings["password"];
-            this.tbMDPAdmin.Text = ConfigurationManager.AppSettings["passwordAdmin"];
+            Security sec = new Security();
+            this.tbMDPAdmin.Text = sec.caesarToString(ConfigurationManager.AppSettings["passwordAdmin"],15);
             this.numericUpDown1.Value = Convert.ToDecimal(ConfigurationManager.AppSettings["nbSaves"]);
             this.tbFrom.Text = ConfigurationManager.AppSettings["from"];
             this.tbMDPFrom.Text = ConfigurationManager.AppSettings["MDPfrom"];
@@ -65,8 +67,9 @@ namespace clientbackup
             {
                 this.treeview.Nodes.Clear();
             }
-            DirectoryInfo directory = new DirectoryInfo(@"\\" + Environment.UserDomainName + @"\C$\Users");
-           // DirectoryInfo directory = new DirectoryInfo(@"\\" + Environment.UserDomainName + @"\C$" + ConfigurationManager.AppSettings["racineRecherche"]);
+            //DirectoryInfo directory = new DirectoryInfo(@"\\" + Environment.UserDomainName + @"\C$\Users");
+            //DirectoryInfo directory = new DirectoryInfo(@"\\" + Environment.UserDomainName + @"." + Environment.MachineName+ @"\C$" + ConfigurationManager.AppSettings["racineRecherche"]);
+            DirectoryInfo directory = new DirectoryInfo(@"C:" + ConfigurationManager.AppSettings["racineRecherche"]);
             TreeNode node = new TreeNode(directory.Name);
             this.treeview.Nodes.Add(node);
             this.recursiveDirSearch(node, directory.FullName);
@@ -100,6 +103,7 @@ namespace clientbackup
                                     if (childNode.FullPath == str)
                                     {
                                         childNode.Checked = true;
+                                        break;
                                     }
                                 }
                             }
@@ -108,9 +112,10 @@ namespace clientbackup
                     }
                 }
             }
-            catch
+            catch(Exception e)
             {
-                parentNode.Nodes.Add(new TreeNode("acces refuse"));
+                parentNode.Nodes.Add(new TreeNode("Erreur"));
+                Log.write("erreur lors de la récupération du chemin du fichier: " + e.Message);
             }
         }
 
@@ -143,7 +148,7 @@ namespace clientbackup
             catch (Exception e)
             {
                 parentNode.Nodes.Add(new TreeNode("erreur"));
-                Log.write("erreur:" + e.Message);
+                Log.write("erreur lors de la récupération du chemin du fichier:" + e.Message);
             }
         }
 
@@ -230,9 +235,10 @@ namespace clientbackup
             //sauvegarde du mot de passe administrateur
             if (this.tbConfirmMDPAdmin.Visible == true)
             {
+                Security sec = new Security();
                 config.AppSettings.Settings.Remove("passwordAdmin");
-                config.AppSettings.Settings.Add("passwordAdmin", this.tbMDPAdmin.Text);
-                Serialization.serializeMDPAdmin(Security.toMd5(this.tbMDPAdmin.Text));
+                config.AppSettings.Settings.Add("passwordAdmin",sec.toCaesar(this.tbMDPAdmin.Text,15));
+                Serialization.serializeMDPAdmin(sec.toCaesar(this.tbMDPAdmin.Text, 15));
             }
             //sauvegarde du nombre de sauvegardes à conserver
             config.AppSettings.Settings.Remove("nbSaves");
@@ -293,7 +299,6 @@ namespace clientbackup
                 MessageBox.Show("Paramètres d'envoi de mails incomplets;");
                 check = false;
             }
-
             return check;
         }
         #endregion

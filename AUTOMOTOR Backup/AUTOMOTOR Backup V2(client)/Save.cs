@@ -1,13 +1,11 @@
 ﻿using System;
-using Microsoft.VisualBasic;
 using System.IO;
 using System.Windows.Forms;
 using System.Collections;
-using System.Text;
 using System.ComponentModel;
-using System.Threading;
-using System.Security.AccessControl;
 using System.Configuration;
+using System.Runtime.InteropServices;
+
 
 
 
@@ -24,26 +22,48 @@ namespace clientbackup
         private const long coeff = 1073741824;
         private const long coeffMo = 1048576;
         private Configuration c;
+        private string saveRoot;
+        private DateTime nextSave;
+        private TimeSpan tempsRestant;
+        private MainForm frm;
 
-        public Save()
+        public Save(MainForm mf)
         {
-            //this.nbFichiersACopier = this.calculNbFichierACopier();
             this.c = new Configuration();
+            frm = mf;
+            nextSave = initNextSave();
             this.infosCopie = new string[2];
+            this.saveRoot = this.getSaveRoot();
+            nextSave = initNextSave();
+            tempsRestant = nextSave - DateTime.Now;
+            if (nextSave.CompareTo(DateTime.Now) < 0)
+            {
+                reportDateSauvegarde();
+            }
         }
 
         public void execute(BackgroundWorker bgw)
         {
+
+            //Envoi de mail en début de sauvegarde
             try
             {
                 Mailer m = new Mailer(this);
                 m.sendNotificationDebut();
-                Log.notifieDebutSauvegarde(DateTime.Now.Day.ToString() + "." + DateTime.Now.Month.ToString() + "." + DateTime.Now.Year.ToString() + " à " + DateTime.Now.Hour + "h" + DateTime.Now.Minute + ".");
+                Log.notifieDebutSauvegarde();
             }
-            catch { }
+            catch(Exception e)
+            {
+                Log.write("- " + DateTime.Now.ToShortDateString() + DateTime.Now.ToShortTimeString() + ": " + e.Message + "/n");
+            }
+
+            //Mise à de la date de dernière sauvegarde
             Serialization.serializeLastSaveDate(DateTime.Now);
+
+            //chargement de la liste des fichiers à sauvegarder
             ArrayList pathesList = (ArrayList)Serialization.deserializeXML("folders.xml");
-            string path = this.getSaveRoot() + @".tmp";
+            string path = this.saveRoot + @".tmp";
+
             //création du dossier de sauvegarde de l'utilisateur
             try
             {
@@ -51,20 +71,18 @@ namespace clientbackup
                 {
                     Directory.Delete(path, true);
                 }
-                if (Directory.Exists(this.getSaveRoot()))
+                if (Directory.Exists(this.saveRoot))
                 {
-                    Directory.Delete(this.getSaveRoot(), true);
+                    Directory.Delete(this.saveRoot, true);
                 }
                 Directory.CreateDirectory(path);
-                //DirectorySecurity dirSecurity = new DirectorySecurity(path,AccessControlSections.All);
-                //Directory.SetAccessControl(path, dirSecurity);
             }
             catch (UnauthorizedAccessException uae)
             {
                 MessageBox.Show(uae.Message + Environment.NewLine + "veuillez le supprimer manuellement");
             }
-            //construction du chemin de sauvegarde des fichiers et
-            //copie des fichiers
+
+            //construction du chemin de sauvegarde des fichiers et copie des fichiers
             foreach (string s in pathesList)
             {
                 try
@@ -92,8 +110,8 @@ namespace clientbackup
 
             try
             {
-                Log.notifieFinSauvegarde("-" + DateTime.Now.Day.ToString() + "." + DateTime.Now.Month.ToString() + "." + DateTime.Now.Year.ToString() + " à " + DateTime.Now.Hour + "h" + DateTime.Now.Minute + ".");
-                Directory.Move(this.getSaveRoot() + @".tmp", this.getSaveRoot());
+                Log.notifieFinSauvegarde();
+                Directory.Move(this.saveRoot + @".tmp", this.saveRoot);
             }
             catch (Exception e)
             {
@@ -106,20 +124,10 @@ namespace clientbackup
         {
             System.Diagnostics.ProcessStartInfo restart = new System.Diagnostics.ProcessStartInfo("shutdown.exe", "-r -t 60");
             System.Diagnostics.Process.Start(restart);
+            Application.Exit();
         }
 
-        public static void closeOutlook()
-        {
-            System.Diagnostics.Process[] processes = System.Diagnostics.Process.GetProcesses();
-            foreach (System.Diagnostics.Process p in processes)
-            {
-                if (p.ProcessName == "OUTLOOK")
-                {
-                    p.Kill();
-                }
-            }
-
-        }
+ 
 
         public bool isDirectory(string path)
         {
@@ -140,7 +148,7 @@ namespace clientbackup
                     string fileName;
                     FileInfo fi = new FileInfo(filePath);
                     fileName = fi.Name;
-                    if (!File.Exists(this.getSaveRoot() + @".tmp\" + this.toSavedFilePathFormat(s) + @"\" + fileName))
+                    if (!File.Exists(this.saveRoot + @".tmp\" + this.toSavedFilePathFormat(s) + @"\" + fileName))
                     {
                         if (!this.estUnRaccourci(filePath))
                         {
@@ -154,7 +162,7 @@ namespace clientbackup
                             }
                             if (ok)
                             {
-                                File.Copy(filePath, this.getSaveRoot() + @".tmp\" + this.toSavedFilePathFormat(s) + @"\" + fileName, true);
+                                File.Copy(filePath, this.saveRoot + @".tmp\" + this.toSavedFilePathFormat(s) + @"\" + fileName, true);
                                 this.nbfichierscopie++;
                                 this.volumeFichiers += fi.Length;
                                 bgw.ReportProgress(nbfichierscopie);
@@ -165,13 +173,8 @@ namespace clientbackup
             }
             catch (Exception e)
             {
-                Log.write("----------ERREUR----------\n");
-                Log.write("\n");
-                //Log.write("erreur lors de la copie de: " + this.fichierCopie);
-                Log.write("message d'erreur:");
+                Log.write("erreur: ");
                 Log.write(e.Message);
-                Log.write("\n");
-                Log.write("--------------------------\n");
                 Log.write("\n");
             }
         }
@@ -185,7 +188,7 @@ namespace clientbackup
                 {
                     DirectoryInfo d = new DirectoryInfo(subDir);
                     string savedDirPath2 = this.toSavedFilePathFormat(savedDirPath);
-                    savedDirPath2 = this.getSaveRoot() + @".tmp" + @"\" + this.toSavedFilePathFormat(savedDirPath) + @"\" + d.Name;
+                    savedDirPath2 = this.saveRoot + @".tmp" + @"\" + this.toSavedFilePathFormat(savedDirPath) + @"\" + d.Name;
                     if (!Directory.Exists(savedDirPath2))
                     {
                         Directory.CreateDirectory(savedDirPath2);
@@ -218,19 +221,16 @@ namespace clientbackup
             //si le fichier de sauvegarde final éxiste et le backgroundWorker est inactif
             //sinon si le fichier de sauvegarde temporaire éxiste et que le backgroundworker est inactif
             //sinon si le fichier de sauvegarde temporaire éxiste et que le backgroundworker est actif
-            //if (Directory.Exists(ConfigurationManager.AppSettings["path"] + @"\" + Environment.UserName + @"\" + dt.Day + "." + dt.Month + "." + dt.Year) && this.bgwk == null)
             if (Directory.Exists(ConfigurationManager.AppSettings["path"] + @"\" + dt.Day + "." + dt.Month + "." + dt.Year) && this.bgwk == null)
             {
                 ok = '2';
             }
             else
-                //if (Directory.Exists(ConfigurationManager.AppSettings["path"] + @"\" + Environment.UserName + @"\" + dt.Day + "." + dt.Month + "." + dt.Year + ".tmp") && this.bgwk == null)
                 if (Directory.Exists(ConfigurationManager.AppSettings["path"] + @"\" + dt.Day + "." + dt.Month + "." + dt.Year + ".tmp") && this.bgwk == null)
                 {
                     ok = '0';
                 }
                 else
-                    //if (Directory.Exists(ConfigurationManager.AppSettings["path"] + @"\" + Environment.UserName + @"\" + dt.Day + "." + dt.Month + "." + dt.Year + ".tmp") && this.bgwk != null)
                     if (Directory.Exists(ConfigurationManager.AppSettings["path"] + @"\" + dt.Day + "." + dt.Month + "." + dt.Year + ".tmp") && this.bgwk != null)
                     {
                         ok = '1';
@@ -249,7 +249,6 @@ namespace clientbackup
         public void setEstTerminee()
         {
             this.estTerminée = this.verifieSiTerminee();
-
         }
 
         public string getNomFichierCopie()
@@ -303,6 +302,8 @@ namespace clientbackup
             this.bgwk = bg;
         }
 
+
+        //supprime la sauvegarde la plus ancienne tant que la nombre de sauvegardes en plus grand que le nbre de sauvegardes à conserver
         public void checkSaveNumber()
         {
             string[] directories = Directory.GetDirectories(this.c.getPath());
@@ -370,6 +371,103 @@ namespace clientbackup
             long gigaOctet = this.volumeFichiers / coeffMo;
             return gigaOctet;
         }
+
+
+        public bool checkSaveConditions()
+        {
+            DateTime lastSave = Serialization.deserializeLastSaveDate(false);
+            int heure = Convert.ToInt32(this.c.getHeure());
+            int minute = Convert.ToInt32(this.c.getMinute());
+            int period = Convert.ToInt32(this.c.getPeriode());
+            bool check = false;
+            try
+            {
+                this.tempsRestant = this.nextSave - DateTime.Now;
+                TimeSpan tempsEcoule = DateTime.Now - lastSave;
+                //this.checkNextSaveDate();
+               /* if (this.tempsRestant.Days == 0 && this.tempsRestant.Hours < 15)
+                {
+                    ShutdownBlockReasonCreate(frm.Handle, "Une sauvegarde automatique va être éffectuée à " + this.nextSave.ToShortTimeString() + "." + Environment.NewLine + " Veuillez ne pas éteindre l'ordinateur");
+                }
+                else
+                { shutdownBlockReasonDestroy(frm.Handle, "Arrêt autorisé"); } */
+                 
+                //this.afficheAlerte();
+                check = this.verifieSiTempsEstEcoule(tempsRestant);
+            }
+            catch { }
+            return check;
+        }
+
+        public DateTime initNextSave()
+        {
+            DateTime d = Serialization.deserializeLastSaveDate(true);
+            DateTime nextSave = d.AddDays(c.getPeriode()).AddHours(-d.Hour + c.getHeure()).AddMinutes(-d.Minute + c.getMinute()).AddSeconds(-d.Second);
+            return nextSave;
+        }
+
+        public DateTime GetNextSave()
+        {
+            return nextSave;
+        }
+
+        public bool verifieSiTempsEstEcoule(TimeSpan t)
+        {
+            bool ok = false;
+            if (t.Days == 0 && t.Hours == 0 && t.Minutes == 0 && t.Seconds == 0)
+            {
+                ok = true;
+            }
+            return ok;
+        }
+
+
+        public void SetTempsRestant(TimeSpan t)
+        {
+            this.tempsRestant = t;
+        }
+
+        public void ajouteTemps(TimeSpan t)
+        {
+            this.tempsRestant.Add(t);
+        }
+
+        //report de la sauvegarde à la date actuelle
+        public void reportDateSauvegarde()
+        {
+            if ((this.nextSave < DateTime.Now) || verifieSiTerminee() == '0')
+            {
+                DateTime d = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, this.c.getHeure(), this.c.getMinute(), 0);
+                if(d.CompareTo(DateTime.Now) >  0)
+                {
+                nextSave = d.AddDays(1);
+                //this.lbDateProchaineSauvegarde1.Text = this.nextSave.ToShortDateString() + " à " + this.nextSave.ToShortTimeString();
+                Log.write("- " + DateTime.Now.ToShortDateString() + " à " + DateTime.Now.ToShortTimeString() + " Date de sauvegarde dépassée ou sauvegarde incomplete, réinitialisation de la date de la prochaine sauvegarde, nouvelle valeur: " + this.nextSave.ToString());
+                }
+            }
+        }
+
+        //si la date de la prochaine sauvegarde est antérieure à la date actuelle, reporte la sauvegarde à la date actuelle
+        public void checkNextSaveDate()
+        {
+            if (this.nextSave < DateTime.Now)
+            {
+                this.nextSave = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, this.c.getHeure(), this.c.getMinute(), 0);
+                //this.lbDateProchaineSauvegarde1.Text = this.nextSave.ToShortDateString() + " à " + this.nextSave.ToShortTimeString();
+            }
+            Log.write("- " + DateTime.Now.ToShortDateString() + " à " + DateTime.Now.ToShortTimeString() + " Date de sauvegarde dépassée, réinitialisation de la date de la prochaine sauvegarde, nouvelle valeur: " + this.nextSave.ToString());
+        }
+
+        public TimeSpan GetTempsRestant()
+        {
+            return tempsRestant;
+        }
+
+        public void SetNextSave(DateTime date)
+        {
+            nextSave = date;
+        }
+
     }
 
 }

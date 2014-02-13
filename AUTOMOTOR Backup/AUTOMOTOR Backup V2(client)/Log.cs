@@ -11,40 +11,29 @@ namespace clientbackup
     {
         public static void write(string s)
         {
-            if(!File.Exists(Environment.CurrentDirectory + @"/Data/Log.txt"))
+            try
             {
-                File.CreateText(Environment.CurrentDirectory + @"/Data/Log.txt");
+                if (!File.Exists(Environment.CurrentDirectory + @"/Data/Log.txt"))
+                {
+                    File.CreateText(Environment.CurrentDirectory + @"/Data/Log.txt");
+                }
+                StreamWriter sw = File.AppendText(Environment.CurrentDirectory + @"/Data/Log.txt");
+                sw.WriteLine(s);
+                sw.Flush();
+                sw.Close();
+                sw.Dispose();
             }
-            StreamWriter sw = File.AppendText(Environment.CurrentDirectory + @"/Data/Log.txt");
-            sw.WriteLine(s);
-            sw.Flush();
-            sw.Close();
-            sw.Dispose();
+            catch { }
         }
 
-        public static void notifieDebutSauvegarde(string s)
+        public static void notifieDebutSauvegarde()
         {
-            Log.write("*****************************************************");
-            Log.write("\n");
-            Log.write("----------------------------------------------------");
-            Log.write("---------------SAUVEGARDE AUTOMATIQUE---------------");
-            Log.write("----------------------------------------------------");
-            Log.write("\n");
-            Log.write("Debut de sauvegarde le " + s);
-            Log.write("\n");
+            Log.write("-" + DateTime.Now.ToShortDateString() + "à " + DateTime.Now.ToShortTimeString() + " Debut de sauvegarde.");
         }
 
-        public static void notifieFinSauvegarde(string s)
+        public static void notifieFinSauvegarde()
         {
-            Log.write("\n");
-            Log.write("Fin de sauvegarde le " + s);
-            Log.write("\n");
-            Log.write("----------------------------------------------------");
-            Log.write("----------------------------------------------------");
-            Log.write("----------------------------------------------------");
-            Log.write("\n");
-            Log.write("*****************************************************");
-
+            Log.write("-" + DateTime.Now.ToShortDateString() + "à " + DateTime.Now.ToShortTimeString() + " Fin de sauvegarde.");
         }
 
         public static void open()
